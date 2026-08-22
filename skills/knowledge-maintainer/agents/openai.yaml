@@ -1,0 +1,4 @@
+interface:
+  display_name: "Knowledge Maintainer"
+  short_description: "Update and validate project context-kg knowledge bases"
+  default_prompt: "Use $knowledge-maintainer to update this repository's context-kg after recent code or design changes."
