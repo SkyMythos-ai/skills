@@ -46,3 +46,17 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 - README 已提供交互式安装、Codex 全局免确认安装、项目级安装提示和显式调用示例。
 - `npx skills add . --list` 成功发现唯一技能 `knowledge-maintainer`。
 - 技能 quick validation、实际知识库 lint 和 `git diff --check` 均通过。
+
+## Skills 使用文档
+
+- [x] 设计可随技能数量扩展的 `docs/` 文档结构
+- [x] 为 `knowledge-maintainer` 编写详细场景与使用指南
+- [x] 精简根 README，并链接到技能文档索引和详情页
+- [x] 验证文档链接、命令示例和知识库格式
+
+### Skills 文档 Review
+
+- 根 README 已收敛为仓库入口、技能目录、安装命令和最短调用示例。
+- `docs/README.md` 定义每个 Skill 对应独立详情页的扩展约定。
+- `docs/knowledge-maintainer.md` 覆盖适用边界、安装、渐进式读取、六类典型工作流、目录结构、校验和常见问题。
+- 三份 Markdown 的 9 个链接、8 个单元测试、技能 quick validation、实际知识库 lint 和 `git diff --check` 均通过。
