@@ -7,6 +7,7 @@
 | Skill | 能力 | 文档 |
 | --- | --- | --- |
 | `knowledge-maintainer` | 维护符合 OKF 的 `context-kg`：创建、查询、重组、校验、代码反向生成和渐进式加载 | [详细使用指南](docs/knowledge-maintainer.md) |
+| `personal-coding-style` | 个人编码规范、Go/Rust/Java 惯用法、正反案例与质量门禁 | [详细使用指南](docs/personal-coding-style.md) |
 
 ## 使用 npx 安装
 

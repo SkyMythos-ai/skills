@@ -5,6 +5,7 @@
 | Skill | 适用场景 | 详细文档 |
 | --- | --- | --- |
 | `knowledge-maintainer` | 维护符合 OKF 的项目知识库，包括查询、写入、代码反向生成、ADR、缺陷复盘、重组和校验 | [使用指南](knowledge-maintainer.md) |
+| `personal-coding-style` | 功能实现、缺陷修复、重构、模块/API 设计和代码审查 | [使用指南](personal-coding-style.md) |
 
 ## 文档约定
 

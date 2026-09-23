@@ -134,3 +134,25 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 - Session Summary 按 `tasks/session-summaries/YYYY/MM/` 分层，索引最新在前，并提供 `--latest-session` 确定恢复入口；长期知识先回写权威 concept，摘要失去连续性价值后连同空月、空年入口清理。
 - `.handoff/` 仅承载本地短期接管状态，不提交且不作为正式来源；Session Summary 是脱敏的时间点导航快照，普通领域查询默认排除。
 - 14 个搜索行为测试与 8 个 lint 测试全部通过；Skill quick validation、实际 `context-kg` lint、Python 编译、真实检索冒烟和 `git diff --check` 均通过，独立 A-J 场景复核无阻断问题。
+
+## 纳入 personal-coding-style
+
+- [x] 核对本机技能资源、仓库布局与文档约定
+- [x] 完整迁入技能并补齐目录和使用指南
+- [x] 验证文件一致性、引用、技能格式及脚本
+- [x] 记录检查结果并完成独立复核
+
+### 验收标准
+
+- `skills/personal-coding-style/` 包含原技能全部有效资源，仅调整本机路径以支持迁移。
+- README 与 docs 索引可找到该技能，使用指南提供本地安装、调用和验证入口。
+- 不改动本机已安装技能；验证结果区分通过与环境限制。
+
+### personal-coding-style Review
+
+- 完整迁入 17 个技能文件；与本机副本相比，仅 `core.md` 和 `local-checks.md` 的本机路径说明有差异。
+- 独立复核确认资源完整、脚本按自身路径定位；两处本机路径依赖已清理。
+- 根 README、docs 索引与独立使用指南已补齐，`npx skills add . --list` 成功发现两个技能。
+- 技能 quick validation、68 个本地文件链接、两个 Python 脚本语法、知识库 lint 和差异空白检查均通过。
+- Go/Rust 共 16 个案例编译通过，8 个 good 案例执行通过，无案例失败；本机 `javac -version` 失败，Java 案例未验证，整体案例脚本退出码为 2。
+- 本机已安装技能保持不变，后续仓库改动需重新安装以同步。

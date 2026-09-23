@@ -1,0 +1,3 @@
+interface:
+  display_name: "个人编码风格"
+  short_description: "按个人习惯编写和审查代码，结合跨语言原则、语言惯用法与正反案例"
