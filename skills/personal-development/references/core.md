@@ -113,4 +113,4 @@
 - 直接偏好依据：现有全局 AGENTS.md 中的简单优先、根因修复、最小影响与验证要求；ai-gateway 项目 `context-kg/tasks/lessons.md` 中 2026-09-15 的职责拆分、小方法、中文关键注释与历史路径清理要求，以及多实例 E2E 的时序验收教训。该项目来源不随本技能分发。
 - 第 7 节的范式选择，以及类型、错误与资源管理细则是对这些偏好的工程化补充；不声称用户曾逐条提出。语言来源见各附录，后续按项目实际版本核实。
 - 特定项目的 Gateway/Platform 分工、Redis schema、限流取舍、断连后继续消费和某次“不保留兼容”决定不升级为全局要求。
-- 当前接入为本机 Codex 全局 AGENTS.md 默认触发 personal-coding-style skill，由 skill 路由本文及案例；其他机器、独立 CODEX_HOME 或其他编码工具需单独接入同一规范。加载规则参见 [OpenAI 官方说明](https://learn.chatgpt.com/docs/agent-configuration/agents-md)。
+- 当前接入为本机 Codex 全局 AGENTS.md 默认触发 personal-development skill，由 skill 路由本文及案例；其他机器、独立 CODEX_HOME 或其他编码工具需单独接入同一规范。加载规则参见 [OpenAI 官方说明](https://learn.chatgpt.com/docs/agent-configuration/agents-md)。

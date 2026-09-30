@@ -135,7 +135,9 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 - `.handoff/` 仅承载本地短期接管状态，不提交且不作为正式来源；Session Summary 是脱敏的时间点导航快照，普通领域查询默认排除。
 - 14 个搜索行为测试与 8 个 lint 测试全部通过；Skill quick validation、实际 `context-kg` lint、Python 编译、真实检索冒烟和 `git diff --check` 均通过，独立 A-J 场景复核无阻断问题。
 
-## 纳入 personal-coding-style
+## 历史：纳入 personal-coding-style
+
+本节记录此前迁入的结果；当前入口已由下方的 `personal-development` 替换任务更新。
 
 - [x] 核对本机技能资源、仓库布局与文档约定
 - [x] 完整迁入技能并补齐目录和使用指南
@@ -156,3 +158,24 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 - 技能 quick validation、68 个本地文件链接、两个 Python 脚本语法、知识库 lint 和差异空白检查均通过。
 - Go/Rust 共 16 个案例编译通过，8 个 good 案例执行通过，无案例失败；本机 `javac -version` 失败，Java 案例未验证，整体案例脚本退出码为 2。
 - 本机已安装技能保持不变，后续仓库改动需重新安装以同步。
+
+## 替换为 personal-development（2026-09-30）
+
+- [x] 核对工作区、已安装技能与仓库的差异和引用
+- [x] 完整迁入 `personal-development` 并移除旧技能目录
+- [x] 同步 README、文档索引、使用指南与任务入口
+- [x] 验证资源完整性、可移植路径、技能发现、链接和格式
+
+### 替换验收标准
+
+- 当前技能入口为 `skills/personal-development/`，包含开发流程、工作区协作、语言规范、案例与脚本；本机已安装副本保持不变。
+- 当前安装、调用及维护文档统一使用新名称，旧目录和旧使用指南移除；本节之前的旧名称仅保留为历史记录。
+- 资源与已安装源一致，仅清理两处本机路径依赖；技能格式、发现、链接、脚本与知识库检查有实际结果。
+
+### personal-development 替换 Review
+
+- 完整迁入 19 个技能文件，新增开发流程、工作区协作及 Go CLI 规范；与已安装源相比，仅 `core.md` 和 `local-checks.md` 清理了本机路径依赖。
+- 技能目录、frontmatter、UI 元数据、README、文档索引和独立使用指南已统一为 `personal-development`；旧技能目录和旧指南已移除，旧名称仅保留在上方历史记录中。
+- `npx skills add . --list` 成功发现 `knowledge-maintainer` 和 `personal-development`；Skill quick validation、96 个本地链接与锚点、两个 Python 脚本语法与 `--help`、实际知识库 lint 和差异空白检查均通过。
+- 案例与脚本内容保持原样，已核对迁入路径下可定位全部 24 个案例块；本次未重新编译或执行语言案例，不沿用历史执行结果作为本次验证。
+- 本机已安装副本保持不变；用户随后明确授权提交并推送本次改动。
