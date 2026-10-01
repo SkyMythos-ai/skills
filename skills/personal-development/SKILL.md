@@ -1,6 +1,6 @@
 ---
 name: personal-development
-description: 应用个人开发流程与工程规范，覆盖功能实现、缺陷修复、重构、模块/API 设计、代码审查、开发工作区管理及开发任务交接；按需读取流程、协作、语言规范和验证要求。纯翻译、闲聊和非开发任务不适用；仅部署时读取流程与验证要求，不加载编码案例。
+description: 应用个人开发流程与工程规范，覆盖实现、修复、重构、模块/API 设计、企业前端 UI/UX、代码审查、工作区管理及开发交接；按需读取流程、语言规范、可用性与验证要求。纯翻译、闲聊和非开发任务不适用；仅部署时不加载编码案例。
 ---
 
 # 个人开发规范
@@ -14,7 +14,11 @@ description: 应用个人开发流程与工程规范，覆盖功能实现、缺�
 | 触发条件 | 读取内容 |
 | --- | --- |
 | 修改文件、暂存/提交、管理 worktree 或创建开发交接 | [工作区协作](references/workspace-collaboration.md)，只执行对应操作的规则 |
-| 实现、修复、重构、模块/API 设计或代码审查 | [通用编码准则](references/core.md)及涉及语言的 [Go](references/go.md)、[Rust](references/rust.md)、[Java](references/java.md)；其他语言按通用准则及项目/语言惯例处理 |
+| 实现、修复、重构、模块/API 设计或代码审查 | [通用编码准则](references/core.md)及涉及语言的 [Go](references/go.md)、[Rust](references/rust.md)、[Java](references/java.md)、[前端 TypeScript/React](references/frontend.md)；其他语言按通用准则及项目/语言惯例处理 |
+| 前端页面/组件实现、交互修复或审查 | [前端编码](references/frontend.md)与[企业 UI/UX](references/enterprise-ui.md)，按当前问题选择[前端案例](references/cases-frontend.md) |
+| 新增、自定义、提取或修改共享前端控件 | [组件选型与内部复用](references/frontend.md#组件选型与内部复用)，先复用内部与 shadcn/ui 控件，再明确自定义合同及调用方验证 |
+| 企业软件页面规划、信息架构或 UI/UX 设计评估 | [企业 UI/UX](references/enterprise-ui.md)，覆盖上手成本、渐进披露与尼尔森十大可用性原则；涉及代码时再读前端编码 |
+| 既有企业产品改版、原型转实现，或抽屉/导航/查询/预览问题 | 按问题选择[企业 UI 经验案例](references/cases-enterprise-ui.md)，核对触发、边界与行为证据，不照搬项目组件库、设备范围或固定尺寸 |
 | 新增、修改或审查 Go CLI | [Go CLI](references/go.md#go-cli) |
 | 代码实现与审查、规范讲解或编码规则更新 | 从[案例索引](references/cases.md)选择相关完整案例，不照搬业务策略 |
 | 关键接口、状态、并发/幂等/降级设计，或注释编写与审查 | [注释规范](references/comments.md) |
@@ -30,7 +34,7 @@ description: 应用个人开发流程与工程规范，覆盖功能实现、缺�
 - 实现围绕领域动作组织状态、资源和副作用；重构先固定外部行为及不变量，再调整边界并清理本次替代路径。小方法、接口、DDD、状态机按收益采用，不机械拆分或要求存量整仓对齐。
 - 新增非显然编码规则提供场景、bad、问题、good、改善点、边界与验证；沿用案例 ID，小改动只完善相关例子。用户要求讲解规则时，在答复中展示最小 bad/good 对照并说明原因与边界。
 - 案例是教学程序或标明的伪代码；缩短时保留结论所需前提，省略实现就收窄保证。未示范的认证、持久化和分布式原子性由项目实际证明。
-- 修改语言案例后运行 `python3 scripts/verify_examples.py`，可用 `--language go`、`rust` 或 `java` 限定范围；它只编译 bad、编译并执行 good 断言，不证明生产集成。缺失工具链标为未完成。
+- 修改 Go/Rust/Java 案例后运行 `python3 scripts/verify_examples.py`，可用 `--language go`、`rust` 或 `java` 限定范围；它只编译 bad、编译并执行 good 断言，不证明生产集成。缺失工具链标为未完成。前端案例是教学片段与设计对照，按[前端验证](references/frontend.md#验证)使用目标项目工具链，不由此脚本验证。
 - Go 并发案例可加 `--race`；缺 JDK 时可用 `--java-image <已在本地的JDK镜像>`。容器只挂载临时案例目录、禁用网络且不自动拉取镜像。
 
 ## 维护边界
