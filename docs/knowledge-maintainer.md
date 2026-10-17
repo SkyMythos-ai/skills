@@ -120,6 +120,39 @@ python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./cont
 
 候选相关性和可信度分开判断：精确 ID、标题和元数据命中负责定位，`status`、`verified`、`stale_after` 和原始来源决定能否作为当前答案。满足问题全部子意图且没有未核验冲突后立即停止，不继续预读无关分支。
 
+#### 本地全文索引与文档监听
+
+需要反复查询较大的知识库时，可使用新增的 QMD 全文入口。当前 Agent 把问题转为关键词与同义表达、筛选少量候选，再读取实时原文；本地脚本不调用额外的 embedding、reranker 或推理 API。便宜子模型是宿主已有能力的可选项。
+
+准备 Python 3.9+、PyYAML 与固定 `@tobilu/qmd@2.8.3`，在 macOS/Linux 使用；QMD 的 Node 运行环境按其安装要求准备。依赖不会在查询过程中自动安装：
+
+```bash
+npm install -g @tobilu/qmd@2.8.3
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg sync
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg search "支付 幂等" \
+  --alternative "扣款 去重" --scope business --limit 5
+```
+
+命令输出有长度预算的 JSON：候选包含路径、元数据、短片段、行号与源文件 `sha256`，默认最多 5 条、整个 JSON 不超过 12,000 字符。状态、类型和范围过滤在候选上限之前执行。获取候选后，使用其 hash 校验并读取原文；文件变化时重新搜索：
+
+```bash
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg read business/payment.md \
+  --start-line 12 --lines 60 --expected-hash <candidate-sha256>
+```
+
+输出 `has_more` 为真时，用 `next_line` 和 `next_column` 分别传给下一次的 `--start-line`、`--start-column`，保持同一个 hash，便可连续读取被预算截断的长行。
+
+每次查询前都会对账，因此不启动监听也能发现文件变化。持续编辑时可主动运行前台监听；启动对账、轮询去抖和定期 hash 检查都在本地完成：
+
+```bash
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg watch \
+  --interval 1 --debounce 0.4 --reconcile-seconds 30
+```
+
+Ctrl-C 退出，不注册后台服务。缓存默认位于用户缓存目录并按知识库隔离，不进入 Git；`--cache-dir` 可指定仓库外位置，`--qmd` 可指定独立安装的可执行文件。缓存可能包含原文，应按知识库的私密程度管理。根目录、根索引或读取失败时会保留缓存并报错；无效或清空的 concept 会移除旧候选。缺依赖或版本不符时，仍可使用前面的无状态搜索入口。
+
+具体模型协作、检索轮次、故障恢复和命令约束见 [本地全文检索流程](../skills/knowledge-maintainer/references/local-retrieval.md)。测试真实依赖时指定 `CONTEXT_KG_QMD_EXECUTABLE=/path/to/qmd` 后运行 `python3 -B -m unittest discover -s skills/knowledge-maintainer/tests`；缺 QMD 时对应集成用例会明确跳过。
+
 ### 5. 沉淀缺陷复盘和测试知识
 
 ```text

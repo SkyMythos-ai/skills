@@ -1,0 +1,3701 @@
+{
+  "version": "2.8.3",
+  "commit": "facd35e01359e59d938bc9418e93fb9318addee3",
+  "summaries": {
+    "lex": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 10,
+        "hit5": 11,
+        "hit10": 11,
+        "mrr10": 0.5,
+        "negative_queries": 3,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 0.95,
+        "first_per_query_p95_ms": 1.37,
+        "repeated_p50_ms": 0.98,
+        "repeated_p95_ms": 1.57,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 4,
+        "hit5": 5,
+        "hit10": 5,
+        "mrr10": 0.5625,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 37.75,
+        "first_per_query_p95_ms": 51.93,
+        "repeated_p50_ms": 38.91,
+        "repeated_p95_ms": 57.69,
+        "errors": 0
+      }
+    },
+    "default-vec": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 19,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9524,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 8.78,
+        "first_per_query_p95_ms": 11.42,
+        "repeated_p50_ms": 8.61,
+        "repeated_p95_ms": 11.14,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 2,
+        "hit5": 3,
+        "hit10": 4,
+        "mrr10": 0.325,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 234.84,
+        "first_per_query_p95_ms": 337.89,
+        "repeated_p50_ms": 239.28,
+        "repeated_p95_ms": 345.26,
+        "errors": 0
+      }
+    },
+    "default-hybrid": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 19,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9524,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 9.44,
+        "first_per_query_p95_ms": 14.6,
+        "repeated_p50_ms": 9.25,
+        "repeated_p95_ms": 10.39,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 4,
+        "hit5": 5,
+        "hit10": 5,
+        "mrr10": 0.525,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 260.68,
+        "first_per_query_p95_ms": 350.4,
+        "repeated_p50_ms": 260.74,
+        "repeated_p95_ms": 333.12,
+        "errors": 0
+      }
+    },
+    "default-reranked": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 19,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9524,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 1516.14,
+        "first_per_query_p95_ms": 2033.97,
+        "repeated_p50_ms": 18.98,
+        "repeated_p95_ms": 31.13,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 4,
+        "hit5": 5,
+        "hit10": 6,
+        "mrr10": 0.5804,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 10020.11,
+        "first_per_query_p95_ms": 10592.43,
+        "repeated_p50_ms": 389.91,
+        "repeated_p95_ms": 698.92,
+        "errors": 0
+      }
+    },
+    "qwen-vec": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 18,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9206,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 16.88,
+        "first_per_query_p95_ms": 73.02,
+        "repeated_p50_ms": 16.77,
+        "repeated_p95_ms": 21.57,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 7,
+        "hit5": 8,
+        "hit10": 8,
+        "mrr10": 0.9375,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 385.07,
+        "first_per_query_p95_ms": 530.83,
+        "repeated_p50_ms": 379.62,
+        "repeated_p95_ms": 540.5,
+        "errors": 0
+      }
+    },
+    "qwen-hybrid": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 18,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9286,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 17.72,
+        "first_per_query_p95_ms": 20.14,
+        "repeated_p50_ms": 17.45,
+        "repeated_p95_ms": 19.33,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 6,
+        "hit5": 8,
+        "hit10": 8,
+        "mrr10": 0.875,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 401.78,
+        "first_per_query_p95_ms": 562.96,
+        "repeated_p50_ms": 367.63,
+        "repeated_p95_ms": 588.7,
+        "errors": 0
+      }
+    },
+    "qwen-reranked": {
+      "fixture": {
+        "queries": 24,
+        "positive_queries": 21,
+        "hit1": 18,
+        "hit5": 21,
+        "hit10": 21,
+        "mrr10": 0.9286,
+        "negative_queries": 3,
+        "negative_nonempty": 3,
+        "first_per_query_p50_ms": 1447.94,
+        "first_per_query_p95_ms": 1663.25,
+        "repeated_p50_ms": 32.34,
+        "repeated_p95_ms": 53.68,
+        "errors": 0
+      },
+      "real": {
+        "queries": 8,
+        "positive_queries": 8,
+        "hit1": 6,
+        "hit5": 8,
+        "hit10": 8,
+        "mrr10": 0.8333,
+        "negative_queries": 0,
+        "negative_nonempty": 0,
+        "first_per_query_p50_ms": 6654.88,
+        "first_per_query_p95_ms": 7799.67,
+        "repeated_p50_ms": 485.17,
+        "repeated_p95_ms": 858.08,
+        "errors": 0
+      }
+    }
+  },
+  "cli_timing": {
+    "search_fixture": {
+      "first_process_ms": 99.98,
+      "subsequent_process_median_ms": 96.58500000000001,
+      "min_ms": 92.39,
+      "max_ms": 99.98
+    },
+    "search_real": {
+      "first_process_ms": 108.62,
+      "subsequent_process_median_ms": 109.735,
+      "min_ms": 104.68,
+      "max_ms": 111.98
+    },
+    "status": {
+      "first_process_ms": 123.63,
+      "subsequent_process_median_ms": 123.025,
+      "min_ms": 121.07,
+      "max_ms": 124.98
+    },
+    "update_unchanged": {
+      "first_process_ms": 136.22,
+      "subsequent_process_median_ms": 141.89499999999998,
+      "min_ms": 136.22,
+      "max_ms": 142.47
+    }
+  },
+  "existing_raw_script_baseline": {
+    "metadata": {
+      "fixture": {
+        "hit1": 10,
+        "hit5": 11,
+        "positive_queries": 21,
+        "p50_ms": 13.93
+      },
+      "real": {
+        "hit1": 5,
+        "hit5": 5,
+        "positive_queries": 8,
+        "p50_ms": 126.095
+      }
+    },
+    "body": {
+      "fixture": {
+        "hit1": 10,
+        "hit5": 11,
+        "positive_queries": 21,
+        "p50_ms": 11.23
+      },
+      "real": {
+        "hit1": 5,
+        "hit5": 5,
+        "positive_queries": 8,
+        "p50_ms": 128.84
+      }
+    }
+  },
+  "embedding_default": [
+    {
+      "collection": "fixture",
+      "elapsed_seconds": 3.116,
+      "returncode": 0
+    },
+    {
+      "collection": "real",
+      "elapsed_seconds": 288.422,
+      "returncode": 0
+    }
+  ],
+  "embedding_qwen": [
+    {
+      "collection": "fixture",
+      "elapsed_seconds": 15.806,
+      "returncode": 0
+    },
+    {
+      "collection": "real",
+      "elapsed_seconds": 832.024,
+      "returncode": 0
+    }
+  ],
+  "limitations": [
+    "小样本人工gold；Hit@K只表示目标路径命中",
+    "原始问句直传脚本，不代表完整Skill工作流",
+    "warm-server/cold-query-cache；每模式前清llm_cache，每问三次",
+    "首个向量/重排查询包含相应模型装载",
+    "无答案近邻非空不等于错误回答",
+    "真实gold已核对正文，但不保证当前权威或唯一答案"
+  ],
+  "full_query_cli": {
+    "default": {
+      "queries": 4,
+      "hit5": 4,
+      "new_process_p50_ms": 2251.43,
+      "min_ms": 1380.48,
+      "max_ms": 4359.1
+    },
+    "qwen": {
+      "queries": 4,
+      "hit5": 4,
+      "new_process_p50_ms": 2348.53,
+      "min_ms": 1253.98,
+      "max_ms": 7444.18
+    }
+  },
+  "incremental": {
+    "incremental-results.json": {
+      "observations": 13,
+      "observation_assertions_passed": true,
+      "checks": [
+        "baseline",
+        "no-auto-update",
+        "modify",
+        "add",
+        "delete",
+        "rename",
+        "no-change",
+        "same-size-mtime",
+        "empty-file-stale-content-observed",
+        "atomic-save",
+        "root-unavailable-soft-deletes-observed",
+        "watchfiles-wrapper",
+        "restored-baseline-files"
+      ]
+    },
+    "incremental-vector-results.json": {
+      "observations": 12,
+      "observation_assertions_passed": true,
+      "checks": [
+        "baseline-vectors-complete",
+        "unchanged-embed-reuses-vectors",
+        "rename-same-hash-reuses-vector",
+        "rename-embed-is-noop",
+        "old-topic-top1",
+        "updated-document-unavailable-to-vector-until-embed",
+        "update-retains-orphan-old-vectors",
+        "new-topic-embedded-and-top1",
+        "embed-does-not-clean-old-orphans",
+        "deleted-document-excluded",
+        "deleted-orphan-vector-retained",
+        "restored-baseline-complete"
+      ]
+    },
+    "incremental-chinese.json": {
+      "observations": 11,
+      "observation_assertions_passed": true,
+      "checks": [
+        "new-file-not-visible-before-update",
+        "chinese-lex-after-update",
+        "new-hash-not-vector-eligible-before-embed",
+        "old-chinese-vector-eligible-after-embed",
+        "modified-before-update-still-old-lex",
+        "chinese-lex-replaced",
+        "changed-hash-not-vector-eligible-until-embed",
+        "new-chinese-vector-eligible-after-embed",
+        "chinese-rename-retains-hash-and-vector",
+        "chinese-delete-excludes-target-paths",
+        "seven-baseline-restored"
+      ]
+    }
+  },
+  "models": [
+    {
+      "name": "default",
+      "repo": "ggml-org/embeddinggemma-300M-GGUF",
+      "sha": "0f741b5a6585bd53aeb15cd1372c56f2a0f65e12",
+      "file": "embeddinggemma-300M-Q8_0.gguf",
+      "size": 333590944,
+      "sha256": "b5ce9d77a3fc4b3b39ccb5643c36777911cc4eb46a66962eadfa3f5f60490d63",
+      "actual_sha256": "b5ce9d77a3fc4b3b39ccb5643c36777911cc4eb46a66962eadfa3f5f60490d63",
+      "hash_matches": true,
+      "elapsed_seconds": 88.87
+    },
+    {
+      "name": "expand",
+      "repo": "tobil/qmd-query-expansion-1.7B-gguf",
+      "sha": "7816de0b72572c6c860ca1eddf97ba9e7fb8cc65",
+      "file": "qmd-query-expansion-1.7B-q4_k_m.gguf",
+      "size": 1282438912,
+      "sha256": "000dfb1c06efa6a049e9f64ba921c3740e2454f62abab6fa10e77bd30bb2bcc0",
+      "actual_sha256": "000dfb1c06efa6a049e9f64ba921c3740e2454f62abab6fa10e77bd30bb2bcc0",
+      "hash_matches": true,
+      "elapsed_seconds": 283.32
+    },
+    {
+      "name": "qwen",
+      "repo": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+      "sha": "370f27d7550e0def9b39c1f16d3fbaa13aa67728",
+      "file": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "size": 639150592,
+      "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+      "actual_sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+      "hash_matches": true,
+      "elapsed_seconds": 109.13
+    },
+    {
+      "name": "rerank",
+      "repo": "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
+      "sha": "a02f48bb4f057028298c21fa033da2b30d7742d5",
+      "file": "qwen3-reranker-0.6b-q8_0.gguf",
+      "size": 639153184,
+      "sha256": "22c9979ce4fbcdc5acdc310c6641c32797eff1aa980b8f7a2db8a8ea23429a48",
+      "actual_sha256": "22c9979ce4fbcdc5acdc310c6641c32797eff1aa980b8f7a2db8a8ea23429a48",
+      "hash_matches": true,
+      "elapsed_seconds": 160.32
+    }
+  ],
+  "quality_records": {
+    "lex": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          7.75,
+          1.68,
+          1.57
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.37,
+          1.25,
+          1.64
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1.37,
+          1.24,
+          1.08
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.09,
+          0.93,
+          0.98
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1.1,
+          1.01,
+          1.13
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.28,
+          1.02,
+          0.91
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          0.79,
+          0.72,
+          0.74
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          0.87,
+          1.0,
+          1.21
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.25,
+          1.05,
+          1.03
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.27,
+          1.18,
+          1.14
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.93,
+          1.09,
+          0.91
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.75,
+          0.8,
+          0.73
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.78,
+          0.72,
+          0.82
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.83,
+          0.74,
+          0.89
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1.01,
+          0.99,
+          0.9
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.81,
+          0.71,
+          0.61
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.96,
+          1.07,
+          1.13
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.82,
+          0.74,
+          0.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.1,
+          1.05,
+          1.25
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1.25,
+          1.27,
+          1.27
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.63,
+          0.66,
+          0.66
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.92,
+          0.72,
+          0.65
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.94,
+          1.17,
+          0.81
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          0.76,
+          0.66,
+          0.62
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          36.78,
+          42.13,
+          37.08
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          51.93,
+          57.69,
+          50.31
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          40.99,
+          43.85,
+          43.52
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          43.99,
+          50.28,
+          45.94
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          1.27,
+          1.0,
+          0.84
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          38.71,
+          39.36,
+          38.45
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          1.21,
+          0.95,
+          0.76
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          1.04,
+          1.1,
+          1.09
+        ],
+        "error": null
+      }
+    ],
+    "default-vec": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1338.36,
+          11.39,
+          11.14
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.19,
+          10.4,
+          10.07
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          9.98,
+          9.74,
+          9.94
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.88,
+          9.31,
+          9.26
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.54,
+          8.96,
+          8.69
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.67,
+          8.63,
+          9.15
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.85,
+          8.82,
+          9.25
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.06,
+          8.67,
+          8.68
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.72,
+          8.53,
+          8.54
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.84,
+          8.76,
+          8.17
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.19,
+          8.63,
+          8.67
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.26,
+          8.45,
+          9.14
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          11.42,
+          8.27,
+          8.71
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.12,
+          8.13,
+          8.16
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          8.25,
+          8.17,
+          16.5
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.16,
+          8.57,
+          8.23
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          11.12,
+          8.17,
+          8.01
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.2,
+          8.38,
+          8.24
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.23,
+          7.85,
+          7.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          7.66,
+          8.14,
+          8.56
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.0,
+          8.03,
+          7.9
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          8.04,
+          8.6,
+          8.62
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          8.68,
+          8.8,
+          8.09
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          8.02,
+          7.62,
+          7.91
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          136.68,
+          154.35,
+          124.01
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          262.36,
+          271.6,
+          265.49
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 10,
+        "latencies_ms": [
+          223.03,
+          225.45,
+          224.8
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          228.41,
+          236.27,
+          234.79
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          241.27,
+          242.28,
+          246.01
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          199.57,
+          198.61,
+          198.88
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          337.89,
+          339.74,
+          345.26
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          280.27,
+          279.74,
+          290.09
+        ],
+        "error": null
+      }
+    ],
+    "default-hybrid": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          28.15,
+          9.83,
+          9.34
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.14,
+          9.77,
+          9.7
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          8.94,
+          8.58,
+          8.41
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.27,
+          9.01,
+          9.18
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.38,
+          8.8,
+          9.07
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.87,
+          8.85,
+          8.98
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.74,
+          8.72,
+          8.94
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.01,
+          8.45,
+          8.49
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.18,
+          8.66,
+          8.7
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          14.6,
+          8.9,
+          8.82
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.61,
+          9.42,
+          9.04
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.73,
+          9.52,
+          9.26
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          8.95,
+          8.96,
+          9.33
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.19,
+          17.85,
+          9.25
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          9.7,
+          10.23,
+          9.66
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          11.47,
+          10.52,
+          9.99
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.03,
+          9.41,
+          9.48
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.49,
+          9.96,
+          10.39
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.0,
+          9.49,
+          9.21
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          10.24,
+          9.58,
+          9.52
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          9.0,
+          8.38,
+          8.7
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          9.97,
+          10.26,
+          9.37
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          9.62,
+          9.9,
+          9.44
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          8.58,
+          8.52,
+          8.34
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          167.82,
+          175.81,
+          164.52
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 5,
+        "latencies_ms": [
+          302.44,
+          308.11,
+          300.37
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          263.6,
+          258.51,
+          255.84
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          244.17,
+          249.59,
+          261.28
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          257.76,
+          260.2,
+          261.76
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          212.23,
+          210.95,
+          199.49
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          350.4,
+          333.12,
+          332.38
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          263.68,
+          270.62,
+          271.6
+        ],
+        "error": null
+      }
+    ],
+    "default-reranked": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1771.42,
+          19.99,
+          13.38
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1440.01,
+          24.13,
+          13.93
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1593.02,
+          20.05,
+          15.8
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1569.96,
+          23.51,
+          16.55
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          2040.25,
+          31.53,
+          22.46
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          2033.97,
+          34.44,
+          23.23
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1762.38,
+          31.13,
+          17.89
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1690.45,
+          30.45,
+          18.5
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1745.52,
+          29.46,
+          18.94
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1607.31,
+          24.72,
+          17.38
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1521.69,
+          23.31,
+          14.77
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1393.38,
+          19.66,
+          12.68
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1430.99,
+          20.67,
+          12.45
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1498.04,
+          22.36,
+          12.85
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1428.17,
+          19.03,
+          13.67
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1292.27,
+          18.23,
+          12.57
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1578.58,
+          20.4,
+          14.5
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1553.17,
+          19.03,
+          12.28
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1449.36,
+          20.3,
+          12.26
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1310.7,
+          19.92,
+          13.09
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1355.22,
+          18.39,
+          12.61
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1354.79,
+          20.07,
+          12.46
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1510.59,
+          19.34,
+          13.08
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1407.91,
+          20.21,
+          13.32
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          10019.42,
+          347.5,
+          325.7
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 7,
+        "latencies_ms": [
+          10025.3,
+          698.92,
+          561.95
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          10107.95,
+          276.87,
+          263.18
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          8242.93,
+          243.89,
+          239.84
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          10592.43,
+          572.52,
+          489.11
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          9219.41,
+          412.19,
+          384.55
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          10020.8,
+          526.24,
+          495.33
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": null,
+        "latencies_ms": [
+          8634.36,
+          344.91,
+          395.27
+        ],
+        "error": null
+      }
+    ],
+    "qwen-vec": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1489.54,
+          18.11,
+          16.77
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.89,
+          16.93,
+          16.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 3,
+        "latencies_ms": [
+          73.02,
+          17.08,
+          17.07
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.81,
+          16.48,
+          16.42
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.33,
+          16.87,
+          17.14
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.27,
+          16.78,
+          18.24
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.12,
+          16.67,
+          17.16
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.56,
+          21.57,
+          16.04
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.65,
+          16.2,
+          16.15
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          15.93,
+          16.24,
+          16.89
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          20.5,
+          16.21,
+          15.97
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          16.41,
+          15.84,
+          16.57
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.17,
+          16.47,
+          15.93
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.06,
+          15.88,
+          16.41
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          19.1,
+          23.44,
+          17.77
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.24,
+          16.0,
+          17.2
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.95,
+          16.43,
+          17.09
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.4,
+          16.52,
+          16.65
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.64,
+          16.37,
+          16.96
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.53,
+          16.59,
+          16.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.61,
+          17.56,
+          17.59
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          16.98,
+          17.65,
+          21.96
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          17.39,
+          17.34,
+          17.49
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          17.78,
+          17.31,
+          17.42
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          176.41,
+          182.81,
+          174.71
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          526.44,
+          512.17,
+          532.64
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          435.2,
+          433.73,
+          409.71
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          332.83,
+          345.17,
+          328.29
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          465.81,
+          451.8,
+          432.29
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          334.95,
+          330.71,
+          349.54
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          530.83,
+          540.5,
+          534.53
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          318.52,
+          309.6,
+          321.63
+        ],
+        "error": null
+      }
+    ],
+    "qwen-hybrid": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          33.16,
+          16.95,
+          16.13
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.17,
+          16.33,
+          16.38
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          15.65,
+          16.28,
+          15.97
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.33,
+          16.34,
+          16.52
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.2,
+          16.5,
+          16.41
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.21,
+          16.58,
+          16.55
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.5,
+          16.7,
+          16.71
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          16.97,
+          17.8,
+          17.44
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.24,
+          16.79,
+          17.17
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.66,
+          18.54,
+          18.9
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          18.23,
+          17.42,
+          17.03
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          16.8,
+          17.58,
+          17.59
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.78,
+          19.3,
+          17.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          18.19,
+          17.52,
+          16.95
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          20.14,
+          19.33,
+          19.92
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          18.77,
+          17.03,
+          16.68
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.46,
+          17.63,
+          17.48
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.78,
+          17.49,
+          17.37
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          18.09,
+          18.43,
+          17.74
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          18.44,
+          18.33,
+          18.54
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          17.97,
+          17.31,
+          17.46
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          17.58,
+          17.53,
+          18.02
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          19.81,
+          17.94,
+          18.56
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          19.72,
+          19.51,
+          18.48
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          223.54,
+          222.3,
+          209.63
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          562.96,
+          588.7,
+          556.09
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          440.21,
+          419.41,
+          424.95
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          363.35,
+          327.07,
+          294.22
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          444.07,
+          425.36,
+          405.04
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          320.94,
+          330.23,
+          327.03
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          509.01,
+          493.17,
+          506.43
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": 2,
+        "latencies_ms": [
+          289.55,
+          287.82,
+          287.14
+        ],
+        "error": null
+      }
+    ],
+    "qwen-reranked": [
+      {
+        "id": "F01",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1806.28,
+          51.71,
+          27.0
+        ],
+        "error": null
+      },
+      {
+        "id": "F02",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1647.22,
+          44.9,
+          25.39
+        ],
+        "error": null
+      },
+      {
+        "id": "F03",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1435.62,
+          42.57,
+          23.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F04",
+        "category": "short_chinese",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1226.35,
+          24.0,
+          25.39
+        ],
+        "error": null
+      },
+      {
+        "id": "F05",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1506.07,
+          48.61,
+          26.3
+        ],
+        "error": null
+      },
+      {
+        "id": "F06",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1486.76,
+          42.71,
+          22.82
+        ],
+        "error": null
+      },
+      {
+        "id": "F07",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1283.45,
+          45.17,
+          23.67
+        ],
+        "error": null
+      },
+      {
+        "id": "F08",
+        "category": "case_id",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1381.24,
+          47.29,
+          23.86
+        ],
+        "error": null
+      },
+      {
+        "id": "F09",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1508.81,
+          53.19,
+          40.51
+        ],
+        "error": null
+      },
+      {
+        "id": "F10",
+        "category": "cross_field",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1663.25,
+          53.84,
+          25.84
+        ],
+        "error": null
+      },
+      {
+        "id": "F11",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1485.24,
+          43.42,
+          23.99
+        ],
+        "error": null
+      },
+      {
+        "id": "F12",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1359.18,
+          43.67,
+          21.61
+        ],
+        "error": null
+      },
+      {
+        "id": "F13",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1169.2,
+          46.21,
+          20.75
+        ],
+        "error": null
+      },
+      {
+        "id": "F14",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1159.66,
+          40.94,
+          20.06
+        ],
+        "error": null
+      },
+      {
+        "id": "F15",
+        "category": "paraphrase",
+        "collection": "fixture",
+        "best_rank": 2,
+        "latencies_ms": [
+          1172.01,
+          40.57,
+          22.6
+        ],
+        "error": null
+      },
+      {
+        "id": "F16",
+        "category": "lifecycle_current",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1132.3,
+          36.11,
+          20.77
+        ],
+        "error": null
+      },
+      {
+        "id": "F17",
+        "category": "lifecycle_history",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1320.58,
+          45.14,
+          24.68
+        ],
+        "error": null
+      },
+      {
+        "id": "F18",
+        "category": "lifecycle_draft",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1512.52,
+          46.69,
+          25.78
+        ],
+        "error": null
+      },
+      {
+        "id": "F19",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1460.27,
+          43.0,
+          24.25
+        ],
+        "error": null
+      },
+      {
+        "id": "F20",
+        "category": "exact_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1425.58,
+          42.68,
+          25.12
+        ],
+        "error": null
+      },
+      {
+        "id": "F21",
+        "category": "mixed_term",
+        "collection": "fixture",
+        "best_rank": 1,
+        "latencies_ms": [
+          1382.68,
+          44.99,
+          24.5
+        ],
+        "error": null
+      },
+      {
+        "id": "F22",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1570.87,
+          54.92,
+          28.57
+        ],
+        "error": null
+      },
+      {
+        "id": "F23",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1610.12,
+          53.68,
+          27.04
+        ],
+        "error": null
+      },
+      {
+        "id": "F24",
+        "category": "no_answer",
+        "collection": "fixture",
+        "best_rank": null,
+        "latencies_ms": [
+          1482.09,
+          50.5,
+          26.93
+        ],
+        "error": null
+      },
+      {
+        "id": "R01",
+        "category": "exact_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          6852.42,
+          148.01,
+          125.32
+        ],
+        "error": null
+      },
+      {
+        "id": "R02",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 3,
+        "latencies_ms": [
+          6657.94,
+          330.09,
+          302.26
+        ],
+        "error": null
+      },
+      {
+        "id": "R03",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          5283.1,
+          314.59,
+          293.41
+        ],
+        "error": null
+      },
+      {
+        "id": "R04",
+        "category": "mixed_term",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          7799.67,
+          416.74,
+          420.72
+        ],
+        "error": null
+      },
+      {
+        "id": "R05",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          3760.81,
+          664.97,
+          639.8
+        ],
+        "error": null
+      },
+      {
+        "id": "R06",
+        "category": "cross_field",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          5340.9,
+          629.24,
+          601.43
+        ],
+        "error": null
+      },
+      {
+        "id": "R07",
+        "category": "paraphrase",
+        "collection": "real",
+        "best_rank": 1,
+        "latencies_ms": [
+          6651.82,
+          858.08,
+          819.51
+        ],
+        "error": null
+      },
+      {
+        "id": "R08",
+        "category": "lifecycle_draft",
+        "collection": "real",
+        "best_rank": 3,
+        "latencies_ms": [
+          6832.57,
+          602.38,
+          549.62
+        ],
+        "error": null
+      }
+    ]
+  },
+  "host_model_reuse_pilot": {
+    "constraint": "不新增或下载检索模型；复用用户当前宿主模型，便宜子模型仅按宿主支持选用",
+    "planner": "gpt-6-luna via host; one blind batch of 32 queries",
+    "reranker": "gpt-6-luna via host; one blind batch of 8 queries and 80 metadata candidates",
+    "retrieval_summary": {
+      "fixture": {
+        "positive_queries": 21,
+        "local_retrieval_p50_ms": 16.855,
+        "variants": {
+          "planned_strict": {
+            "hit1": 12,
+            "hit5": 13,
+            "hit10": 13,
+            "negative_nonempty": 0
+          },
+          "planned_with_terms": {
+            "hit1": 15,
+            "hit5": 21,
+            "hit10": 21,
+            "negative_nonempty": 3
+          }
+        }
+      },
+      "real": {
+        "positive_queries": 8,
+        "local_retrieval_p50_ms": 484.03,
+        "variants": {
+          "planned_strict": {
+            "hit1": 1,
+            "hit5": 5,
+            "hit10": 5,
+            "negative_nonempty": 0
+          },
+          "planned_with_terms": {
+            "hit1": 1,
+            "hit5": 6,
+            "hit10": 8,
+            "negative_nonempty": 0
+          }
+        }
+      }
+    },
+    "metadata_rerank_summary": {
+      "queries": 8,
+      "hit1": 7,
+      "hit5": 8,
+      "planner": "gpt-6-luna via existing host",
+      "reranker": "gpt-6-luna via existing host",
+      "candidate_metadata_chars": 28142,
+      "llm_latency_and_cost_measured": false,
+      "qmd_vector_rows": 0,
+      "gguf_files_in_isolated_state": 0
+    },
+    "quality_records": [
+      {
+        "id": "F01",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 37.63,
+        "backend_requests": 16
+      },
+      {
+        "id": "F02",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 21.46,
+        "backend_requests": 19
+      },
+      {
+        "id": "F03",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 2,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 4.68,
+        "backend_requests": 4
+      },
+      {
+        "id": "F04",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 9.12,
+        "backend_requests": 9
+      },
+      {
+        "id": "F05",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 21.6,
+        "backend_requests": 14
+      },
+      {
+        "id": "F06",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 15.62,
+        "backend_requests": 15
+      },
+      {
+        "id": "F07",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 1.21,
+        "backend_requests": 1
+      },
+      {
+        "id": "F08",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 1.1,
+        "backend_requests": 1
+      },
+      {
+        "id": "F09",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 7.09,
+        "backend_requests": 6
+      },
+      {
+        "id": "F10",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 11.42,
+        "backend_requests": 7
+      },
+      {
+        "id": "F11",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 24.11,
+        "backend_requests": 22
+      },
+      {
+        "id": "F12",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 3
+        },
+        "local_retrieval_ms": 17.16,
+        "backend_requests": 17
+      },
+      {
+        "id": "F13",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 23.21,
+        "backend_requests": 22
+      },
+      {
+        "id": "F14",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 19.26,
+        "backend_requests": 19
+      },
+      {
+        "id": "F15",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 35.05,
+        "backend_requests": 23
+      },
+      {
+        "id": "F16",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 25.64,
+        "backend_requests": 21
+      },
+      {
+        "id": "F17",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 25.16,
+        "backend_requests": 21
+      },
+      {
+        "id": "F18",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 23.11,
+        "backend_requests": 23
+      },
+      {
+        "id": "F19",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 16.73,
+        "backend_requests": 15
+      },
+      {
+        "id": "F20",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 16.98,
+        "backend_requests": 16
+      },
+      {
+        "id": "F21",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 14.03,
+        "backend_requests": 16
+      },
+      {
+        "id": "F22",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": null
+        },
+        "local_retrieval_ms": 10.24,
+        "backend_requests": 15
+      },
+      {
+        "id": "F23",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": null
+        },
+        "local_retrieval_ms": 12.7,
+        "backend_requests": 17
+      },
+      {
+        "id": "F24",
+        "collection": "fixture",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": null
+        },
+        "local_retrieval_ms": 16.69,
+        "backend_requests": 19
+      },
+      {
+        "id": "R01",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": 2,
+          "planned_with_terms": 2
+        },
+        "local_retrieval_ms": 423.83,
+        "backend_requests": 15
+      },
+      {
+        "id": "R02",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": 2,
+          "planned_with_terms": 5
+        },
+        "local_retrieval_ms": 316.69,
+        "backend_requests": 11
+      },
+      {
+        "id": "R03",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": 3,
+          "planned_with_terms": 3
+        },
+        "local_retrieval_ms": 727.37,
+        "backend_requests": 20
+      },
+      {
+        "id": "R04",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": 1,
+          "planned_with_terms": 4
+        },
+        "local_retrieval_ms": 438.58,
+        "backend_requests": 21
+      },
+      {
+        "id": "R05",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 9
+        },
+        "local_retrieval_ms": 529.48,
+        "backend_requests": 19
+      },
+      {
+        "id": "R06",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": 2,
+          "planned_with_terms": 3
+        },
+        "local_retrieval_ms": 425.36,
+        "backend_requests": 15
+      },
+      {
+        "id": "R07",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 7
+        },
+        "local_retrieval_ms": 789.13,
+        "backend_requests": 23
+      },
+      {
+        "id": "R08",
+        "collection": "real",
+        "ranks": {
+          "planned_strict": null,
+          "planned_with_terms": 1
+        },
+        "local_retrieval_ms": 540.19,
+        "backend_requests": 23
+      }
+    ],
+    "rerank_records": [
+      {
+        "id": "R01",
+        "best_rank": 1
+      },
+      {
+        "id": "R02",
+        "best_rank": 2
+      },
+      {
+        "id": "R03",
+        "best_rank": 1
+      },
+      {
+        "id": "R04",
+        "best_rank": 1
+      },
+      {
+        "id": "R05",
+        "best_rank": 1
+      },
+      {
+        "id": "R06",
+        "best_rank": 1
+      },
+      {
+        "id": "R07",
+        "best_rank": 1
+      },
+      {
+        "id": "R08",
+        "best_rank": 1
+      }
+    ],
+    "planning_and_reranking_latency_cost_measured": false,
+    "limits": [
+      "规划模型耗时与费用未测",
+      "多路全文搜索耗时不等于单次FTS耗时",
+      "候选topK仅目标命中，不表示回答正确",
+      "通用词项补召回最多20项，每词top20，权重0.2；未依gold调参",
+      "未做最终Agent片段筛选与交互式第二轮查询",
+      "元数据筛选只测8条有目标真实查询；未测该阶段无答案拒答",
+      "没有给规划器或筛选器gold和正文，但仅为单次探索性pilot，无重复性结论",
+      "本地召回p50包含多条HTTP词法查询，不是单次FTS延迟"
+    ]
+  },
+  "implementation_smoke": {
+    "indexed": {
+      "added": 140,
+      "changed": 0,
+      "deleted": 0,
+      "unchanged": 0,
+      "warnings": [
+        "跳过 technical/adr/official-business-mcp.md：缺少 YAML frontmatter",
+        "跳过 technical/adr/platform-assistant-diagnostic-delegation.md：缺少 YAML frontmatter"
+      ]
+    },
+    "build_ms": 1019.48,
+    "noop_p50_ms": 138.09,
+    "search_8q_p50_ms": 424.315,
+    "hit5": 5,
+    "hit10": 5,
+    "vector_rows": 0,
+    "gguf_files": 0,
+    "rows": [
+      {
+        "id": "R01",
+        "ms": 505.09,
+        "chars": 6365,
+        "rank": 1,
+        "count": 10,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R02",
+        "ms": 415.51,
+        "chars": 6023,
+        "rank": 2,
+        "count": 10,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R03",
+        "ms": 395.71,
+        "chars": 2394,
+        "rank": 3,
+        "count": 4,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R04",
+        "ms": 391.86,
+        "chars": 2793,
+        "rank": 1,
+        "count": 5,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R05",
+        "ms": 469.62,
+        "chars": 1263,
+        "rank": null,
+        "count": 2,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R06",
+        "ms": 398.98,
+        "chars": 2476,
+        "rank": 2,
+        "count": 4,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R07",
+        "ms": 466.84,
+        "chars": 739,
+        "rank": null,
+        "count": 1,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      },
+      {
+        "id": "R08",
+        "ms": 433.12,
+        "chars": 195,
+        "rank": null,
+        "count": 0,
+        "warnings": 2,
+        "gold_not_indexed": 0
+      }
+    ],
+    "limits": [
+      "new CLI processes including source hash sync; warm filesystem, one pass, no model latency or fees",
+      "same frozen 8 query targets; only original plus 3 frozen keyword plans, no 20-term fallback or host candidate rerank; not general accuracy"
+    ],
+    "candidate_recall_diagnostic_only": true,
+    "as_of": "2026-10-17T23:11:45+08:00",
+    "guided_followup": {
+      "records": [
+        {
+          "id": "R05",
+          "queries": [
+            "富文本",
+            "Markdown 原文",
+            "编辑器"
+          ],
+          "rank": 10,
+          "ms": 520.91,
+          "chars": 5810,
+          "count": 10
+        },
+        {
+          "id": "R07",
+          "queries": [
+            "部署",
+            "验收",
+            "E2E"
+          ],
+          "rank": 3,
+          "ms": 554.75,
+          "chars": 5480,
+          "count": 10
+        },
+        {
+          "id": "R08",
+          "queries": [
+            "EverOS",
+            "人工修订",
+            "记忆"
+          ],
+          "rank": 3,
+          "ms": 490.96,
+          "chars": 5259,
+          "count": 10
+        }
+      ],
+      "limitation": "主Agent在看到首轮诊断结果后基于原问题补查，不是盲评、不证明一般准确率；未执行候选答案生成或费用计量"
+    }
+  }
+}
