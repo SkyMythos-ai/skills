@@ -12,6 +12,12 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 try:
+    from context_kg_history import history_allowed, is_archive_path
+except ImportError:  # importlib 加载时确保可定位同目录的共享规则
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from context_kg_history import history_allowed, is_archive_path
+
+try:
     import yaml
 except ImportError:  # pragma: no cover - depends on the host environment
     yaml = None
@@ -199,10 +205,6 @@ def _under_scope(relative_path: str, scope: str | None) -> bool:
     return path == target or target in path.parents
 
 
-def _is_session_summary(relative_path: str) -> bool:
-    return SESSION_SUMMARIES in PurePosixPath(relative_path).parents
-
-
 def search(
     context_kg: Path,
     query: str,
@@ -239,17 +241,12 @@ def search(
         if path.name in RESERVED_FILES:
             continue
         relative_path = path.relative_to(context_kg).as_posix()
-        if not history and _is_session_summary(relative_path):
-            continue
         document = _load_document(path, context_kg)
         if document is None:
             continue
         status = _status(document.metadata)
-        if (
-            status == "deprecated"
-            and not history
-            and _normalise(status_filter) != "deprecated"
-        ):
+        if not history_allowed(relative_path, document.metadata, history=history,
+                               status_filter=status_filter):
             continue
         if type_filter and _normalise(document.metadata.get("type")) != type_filter.casefold():
             continue
@@ -335,7 +332,8 @@ def latest_session(context_kg: Path, *, history: bool = False) -> SearchResult |
             continue
         if _normalise(document.metadata.get("type")) != "session summary":
             continue
-        if _status(document.metadata) == "deprecated" and not history:
+        if not history and (is_archive_path(document.relative_path)
+                            or _status(document.metadata) == "deprecated"):
             continue
         if session_time := _session_time(document):
             candidates.append((session_time, document))
@@ -367,7 +365,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--history",
         action="store_true",
-        help="纳入 deprecated 与 tasks/session-summaries/",
+        help="纳入 deprecated、archive/ 与 Session Summary",
     )
     parser.add_argument(
         "--body", dest="include_body", action="store_true", help="显式同时搜索正文"

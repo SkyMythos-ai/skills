@@ -68,6 +68,24 @@ class LocalContractTest(unittest.TestCase):
                 self.fail("有界分页不能推进")
             self.assertEqual(content, "".join(pages))
 
+    def test_qmd_eligibility_shares_archive_and_history_rules(self) -> None:
+        eligible = MODULE.LocalIndex._eligible
+        common = {"scope": None, "type_filter": None, "status_filter": None}
+        self.assertFalse(eligible("business/archive/rule.md", {"status": "stable"},
+                                  **common, history=False))
+        self.assertFalse(eligible("quality/ARCHIVE/old.md", {"status": "deprecated"},
+                                  **{**common, "status_filter": "deprecated"}, history=False))
+        self.assertFalse(eligible("custom/archive/unknown.md", {"status": "mystery"},
+                                  **common, history=False))
+        self.assertTrue(eligible("technical/archive-storage.md", {"status": "stable"},
+                                 **common, history=False))
+        self.assertTrue(eligible("technical/archived-name.md", {"status": "stable"},
+                                 **common, history=False))
+        self.assertTrue(eligible("business/archive/rule.md", {"status": "stable"},
+                                **common, history=True))
+        self.assertTrue(eligible("tasks/session-summaries/summary.md",
+                                 {"type": "Session Summary"}, **common, history=True))
+
     def test_scan_error_preserves_manifest_and_source_projection(self) -> None:
         branch = self.root / "technical"
         branch.mkdir()
@@ -201,6 +219,28 @@ class QmdIntegrationTest(unittest.TestCase):
         history = self.paths("退款", "--history", "--limit", "20")
         self.assertIn("technical/summary.md", history)
         self.assertIn("tasks/session-summaries/summary.md", history)
+
+    def test_archive_filter_is_applied_on_cached_index(self) -> None:
+        self.concept("business/archive/rule.md", title="archive topic")
+        self.concept("quality/ARCHIVE/old.md", title="archive topic", status="deprecated")
+        self.concept("custom/archive/unknown.md", title="archive topic", status="mystery")
+        self.concept("technical/archive-storage.md", title="archive topic")
+        self.concept("custom/archived-name.md", title="archive topic")
+        self.concept("technical/old.md", title="archive topic", status="deprecated")
+
+        self.invoke("sync")
+        initial = {"technical/archive-storage.md", "custom/archived-name.md"}
+        self.assertEqual(initial, set(self.paths("archive topic")))
+        # 无文件改动的下一次 sync 不应让历史过滤失效或改变源缓存。
+        self.invoke("sync")
+        self.assertEqual(initial, set(self.paths("archive topic")))
+        self.assertEqual({
+            "business/archive/rule.md", "quality/ARCHIVE/old.md",
+            "custom/archive/unknown.md", "technical/archive-storage.md",
+            "custom/archived-name.md", "technical/old.md",
+        }, set(self.paths("archive topic", "--history", "--limit", "20")))
+        self.assertEqual({"technical/old.md"}, set(self.paths(
+            "archive topic", "--status", "deprecated", "--limit", "20")))
 
     def test_incremental_rename_atomic_save_same_stat_and_empty_file(self) -> None:
         original = self.concept("technical/旧名称.md", body="蜜蜂采蜜")

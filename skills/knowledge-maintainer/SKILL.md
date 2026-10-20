@@ -1,6 +1,6 @@
 ---
 name: knowledge-maintainer
-description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 知识库。用于快速渐进检索、增量更新、会话摘要、生命周期治理、校验或从代码反向生成知识，以及处理测试用例及其编码规范、代码设计规范、ADR、缺陷复盘和长期项目文档。
+description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 知识库。用于渐进检索、增量更新、通过 rebuild 整理存量知识库、分类与命名检查、有效性复核、历史归档、会话摘要、校验或从代码生成知识，覆盖业务、技术、质量、任务与元知识。
 ---
 
 # Knowledge Maintainer
@@ -11,9 +11,10 @@ description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 
 
 ## 操作路由
 
+- **`rebuild` 短指令**：`$knowledge-maintainer rebuild [bundle-path]` 触发[全库存量治理](references/knowledge-governance.md#rebuild-短指令)。默认目标为当前项目的 `context-kg/`；已明确讨论本技能的知识库治理时可简写 `rebuild`，其他构建语境中的同名命令沿用其原义。
 - **读取或回答问题**：执行“快速渐进式检索”，先返回少量候选路径，再只加载回答所需的知识。
 - **写入或反向生成**：先收集证据并完成生命周期对账，再按 OKF 页面契约写入并同步索引与日志。
-- **重组或生命周期治理**：先确定当前有效结论和目标分类，再合并、替换或删除旧内容，修复标准 Markdown 链接并重建相关索引。
+- **分类、命名或生命周期治理**：读取[全库治理](references/knowledge-governance.md)。先盘点，再由当前模型结合证据填充有限批次计划；检查路径、引用和快照后应用，保留恢复记录。
 - **会话收尾**：最终交付附简短的 KG 使用小结；先把长期结论写回权威 concept，需要连续性导航时再保存 Session Summary。
 - **校验**：运行随附 lint；OKF 允许但本项目不推荐的情况应报告为警告，而不是误判为格式错误。
 
@@ -27,7 +28,7 @@ description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 
 - `tasks/`：任务计划、进度、review、lessons 和会话摘要；不承载长期架构知识。
 - `_meta/`：项目自定义 schema 等元知识。这里的普通 `.md` 仍是 OKF concept；`index.md`、`log.md` 仍遵守 OKF 保留文件规则。
 
-长期技术方案和架构决策默认进入 `technical/adr/`，不要落到 `docs/design/`。业务页只保留技术摘要，并链接到对应技术 concept。
+长期技术知识写入 `technical/` 下对应角色：ADR 记录重要技术选择及取舍；架构说明、详细合同、持续规范、调研和运维分别归入 `architecture/`、`contracts/`、`standards/`、`research/`、`operations/`。按实际内容建立目录；项目已有有效分类时沿用，避免为形式统一迁移稳定 ID。业务页链接技术权威 concept。
 
 ## 一等工程知识
 
@@ -44,7 +45,7 @@ description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 
 检索的完成条件是问题的各个子意图已有足够、相互一致且时效可信的证据；达到条件后立即停止，不为“可能还有更多”继续扩张上下文。
 
 1. 提取查询中的精确键（concept 路径、文件名、Case ID、符号或接口名）、主题词、预期 `type`、适用范围和“当前/目标/历史”时间语义。先读仓库指令与根 `index.md`，按目录描述进入一个或少量相关分支。
-2. 有精确键或索引路由不够明确时，定位少量候选。已启用本地全文索引，或用户要求本地快速检索/文档监听时，读取[本地全文检索](references/local-retrieval.md)，由当前 Agent 生成少量关键词并调用 `context_kg_qmd.py`；脚本负责同步、全文召回、过滤和输出预算。其他情况使用 `context_kg_search.py`：先匹配路径与元数据，元数据零候选且有 `--scope` 时才回退该分支正文，全库正文须显式 `--body`。普通查询默认排除 `deprecated` 和 `tasks/session-summaries/`，历史查询显式使用 `--history`。
+2. 有精确键或索引路由不够明确时，定位少量候选。已启用本地全文索引，或用户要求本地快速检索/文档监听时，读取[本地全文检索](references/local-retrieval.md)，由当前 Agent 生成少量关键词并调用 `context_kg_qmd.py`；脚本负责同步、全文召回、过滤和输出预算。其他情况使用 `context_kg_search.py`：先匹配路径与元数据，元数据零候选且有 `--scope` 时才回退该分支正文，全库正文须显式 `--body`。普通查询默认排除 `deprecated`、任意层级的 `archive/` 和 Session Summary，历史查询显式使用 `--history`。
 3. 候选相关性按精确 ID/路径或 Case ID、标题、索引描述与 `description/tags/type`、正文命中、直接关系依次降低；可信度另按当前适用范围、`status`、`verified`、`stale_after` 和原始来源判断。关键词分高不能让 `draft`、过期或历史内容冒充当前结论，文件更新时间也不是权威性证据。
 4. 只打开最高置信的少量 concept。仅当它们不能完整回答时，沿标准 Markdown 链接或 `sources[].resource` 继续一层；每扩一层重新检查停止条件。索引缺失时只列当前层直属项并读取其 frontmatter 合成临时导航，不递归预读子树正文。
 5. 对易漂移事实、`draft`、已过 `stale_after`、来源不足或相互冲突的内容，转向代码、配置、测试或原始来源核验，并在回答中说明知识库状态。零候选时先扩大到全库元数据检索，最后才做限定范围的正文搜索。

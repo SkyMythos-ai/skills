@@ -24,10 +24,16 @@ except ImportError:  # pragma: no cover - 由宿主 Python 提供
     yaml = None
 
 try:
-    from context_kg_search import _freshness, _is_session_summary
+    from context_kg_history import history_allowed
 except ImportError:  # importlib 加载本脚本时也须可用
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from context_kg_search import _freshness, _is_session_summary
+    from context_kg_history import history_allowed
+
+try:
+    from context_kg_search import _freshness
+except ImportError:  # importlib 加载本脚本时也须可用
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from context_kg_search import _freshness
 
 SCHEMA_VERSION = 1
 MAX_DOCUMENTS = 10000
@@ -368,10 +374,7 @@ class LocalIndex:
             return False
         if type_filter and str(metadata.get("type", "")).casefold() != type_filter.casefold():
             return False
-        if not history and status == "deprecated" and status_filter != "deprecated":
-            return False
-        if not history and (_is_session_summary(path)
-                            or str(metadata.get("type", "")).casefold() == "session summary"):
+        if not history_allowed(path, metadata, history=history, status_filter=status_filter):
             return False
         return True
 

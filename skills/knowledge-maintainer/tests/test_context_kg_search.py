@@ -109,6 +109,34 @@ class ContextKgSearchTest(unittest.TestCase):
         results = self.search("legacy", status_filter="deprecated")
         self.assertEqual(["technical/old.md"], [r.path for r in results])
 
+    def test_archive_paths_require_history_and_status_filter_does_not_bypass_them(self) -> None:
+        self.concept("business/archive/rule.md", title="archive-rule")
+        self.concept("quality/Archive/old.md", title="archive-rule", status="deprecated")
+        self.concept("custom/archive/unknown.md", title="archive-rule", status="unrecognised")
+        self.concept("technical/archive-storage.md", title="archive-rule")
+        self.concept("custom/archived-name.md", title="archive-rule")
+        self.concept("technical/old.md", title="archive-rule", status="deprecated")
+
+        ordinary = {result.path for result in self.search("archive-rule")}
+        self.assertEqual({"technical/archive-storage.md", "custom/archived-name.md"}, ordinary)
+
+        history = {result.path for result in self.search("archive-rule", history=True)}
+        self.assertEqual(6, len(history))
+
+        deprecated = {result.path for result in self.search(
+            "archive-rule", status_filter="deprecated")}
+        self.assertEqual({"technical/old.md"}, deprecated)
+
+    def test_archive_with_omitted_status_is_still_hidden(self) -> None:
+        self.write("business/archive/missing-status.md",
+                   "---\ntype: Rule\ntitle: unstated-status\n---\n")
+        self.concept("business/current.md", title="unstated-status")
+
+        self.assertEqual(["business/current.md"],
+                         [result.path for result in self.search("unstated-status")])
+        self.assertEqual({"business/archive/missing-status.md", "business/current.md"},
+                         {result.path for result in self.search("unstated-status", history=True)})
+
     def test_limit_scope_type_status_and_unknown_type(self) -> None:
         self.concept("quality/one.md", type_="Test Oracle", title="match", status="draft")
         self.concept("quality/two.md", type_="Test Oracle", title="match", status="draft")
@@ -266,6 +294,22 @@ class ContextKgSearchTest(unittest.TestCase):
             code = MODULE.main([str(self.root), "--latest-session"])
         self.assertEqual(0, code)
         self.assertIn("2026-08-29-new.md", output.getvalue())
+
+    def test_latest_session_skips_archived_summary_unless_history_is_requested(self) -> None:
+        self.concept(
+            "tasks/session-summaries/archive/2026-09-01-archived.md",
+            type_="Session Summary", title="Archived",
+            generated_at="2026-09-01T09:00:00+00:00",
+        )
+        self.concept(
+            "tasks/session-summaries/2026/08/2026-08-29-current.md",
+            type_="Session Summary", title="Current",
+            generated_at="2026-08-29T09:00:00+00:00",
+        )
+
+        self.assertTrue(MODULE.latest_session(self.root).path.endswith("2026-08-29-current.md"))
+        self.assertTrue(MODULE.latest_session(self.root, history=True).path.endswith(
+            "2026-09-01-archived.md"))
 
 
 if __name__ == "__main__":

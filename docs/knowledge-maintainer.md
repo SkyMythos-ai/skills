@@ -13,7 +13,7 @@
 | 快速检索与增量同步 | 知识库较大，只想定位或更新真正相关的内容 | 少量候选、局部更新、可解释命中 |
 | 缺陷与测试沉淀 | 修复完成后需要保留根因、回归用例或测试策略 | 缺陷复盘、测试用例、质量知识 |
 | 测试与工程规范 | 需要管理测试 case、测试用例编码规则或持续生效的设计约束 | 独立 Test Case、Test Case Standard、Code Design Standard |
-| 知识库治理 | 新旧方案冲突、页面重复、目录混乱、链接失效或格式不一致 | 唯一当前结论、清理后的旧内容、索引、日志和 lint 结果 |
+| 全库知识治理 | 分类混杂、命名含糊、需求变更、历史混入当前知识或重复页面 | 盘点与命名诊断、有效性证据、可检查计划、归档与恢复记录 |
 
 以下情况通常不需要使用：只改一行临时代码且没有可复用知识、仅记录短期聊天过程、或者只想创建普通用户文档而不维护 `context-kg/`。
 
@@ -109,7 +109,7 @@ Skill 不会把提交记录原样复制进知识库，而会提炼稳定的职�
 
 读取路径是：根 `index.md` → 命中的目录 `index.md` → 带命中原因的少量候选 → 少量目标 concept → 必要的一跳链接或来源。任意层缺索引时，只会查看当前层直属项并临时合成导航，不会默认递归加载整个知识库。
 
-精确路径、Case ID、接口名或主题词可以使用随附搜索脚本定位。默认只返回当前知识候选并排除 Session Summary；元数据无候选时优先用 `--scope` 限定正文回退范围，确需全库正文搜索时才显式增加 `--body`。中文多词跨字段检索时用空格分隔主题词：
+精确路径、Case ID、接口名或主题词可以使用随附搜索脚本定位。默认排除 deprecated、任意层级的 archive 目录和 Session Summary；历史查询使用 `--history`。元数据无候选时优先用 `--scope` 限定正文回退范围，确需全库正文搜索时才显式增加 `--body`。中文多词跨字段检索时用空格分隔主题词：
 
 ```bash
 python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg "退款幂等" --limit 5
@@ -182,16 +182,31 @@ Ctrl-C 退出，不注册后台服务。缓存默认位于用户缓存目录并�
 
 ### 7. 重组或治理知识库
 
+在目标项目会话中发送短指令，即可启动整个存量知识库的分类、命名、有效性与历史治理：
+
 ```text
-使用 $knowledge-maintainer 审计并重组 context-kg。
-先识别同一范围内互相冲突的新旧方案并确定当前有效结论，再给出目标 taxonomy；
-合并重复内容，删除已完全失效且没有历史价值的页面，隔离仍需保留的历史决策；
-保持 concept ID 稳定优先，更新受影响的 index.md 和 log.md，最后运行 lint。
+$knowledge-maintainer rebuild
 ```
 
-OKF 不强制固定目录分类。Skill 默认使用 `business/`、`technical/`、`quality/` 和 `tasks/`，但仓库自己的 schema 可以增加约束。删除、合并或移动页面后，Skill 还会扫描整个 `context-kg/` 的标准 Markdown 入链和 `sources[].resource`，避免索引之外留下隐性旧引用。
+默认目标为当前项目 `context-kg/`，也可指定 `$knowledge-maintainer rebuild /project/context-kg`。已明确讨论本技能的知识库治理时可直接说 `rebuild`；其他构建场景中的同名命令保留原义。Agent 会盘点、分批判读证据、填写并检查计划、执行有依据的整理，将进度及待复核项记入项目任务记录；提交、推送和部署仍按既有授权处理。短指令由 Agent 解释，底层 CLI 继续使用下文的五个子命令。
+
+治理覆盖 `business/`、`technical/`、`quality/`、`tasks/`、`_meta/`、自定义分支及附件。按知识角色分类后再按领域下钻：ADR 记录选择和取舍，合同、持续规范、调研、运行证据分别维护。命名默认小写 kebab-case，标题说明对象和职责；同 basename、真实协议版本、事件日期和项目既有稳定 ID 可以保留。命名偏好产生提示，不充当 OKF 格式错误。
 
 `status: deprecated` 只适合仍有审计、迁移或兼容价值的历史 concept，默认查询不会把它当作当前结论。它不是废弃内容的默认归宿；没有剩余价值的内容应直接移除。删除前会先把旧页中仍有效的独有内容迁移到权威页面；证据不足以判断是否仍有消费者时，Skill 会先把冲突隔离为待决事项，而不会猜测性删除。
+
+脚本提供盘点、计划、检查、应用和恢复；当前模型读取有限候选及原始证据，决定是否移动、更新、归档或删除。`stale_after` 到期只提示复核，`stable` 也不等于需求已生效或实现已通过验收。无需额外模型或 API 凭据。
+
+```bash
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py audit ./context-kg --limit 20 --output /tmp/kg-audit.json
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py plan ./context-kg --output /tmp/kg-plan.json
+# 由当前模型依据证据填写计划中的 actions，再审阅 check 返回的 diff。
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py check ./context-kg --plan /tmp/kg-plan.json
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py apply ./context-kg --plan /tmp/kg-plan.json
+```
+
+计划记录全库 hash 和跟踪边界；执行前检查文件集合、证据、路径碰撞与引用，修复可解析的内部 Markdown 链接、来源路径、已知概念 ID 和受影响索引。外部代码或配置仍引用旧路径时阻断，先修好调用方并重建计划。不会自动迁移到新目录或把忽略文件变成共享文件。动态路径与外部仓库消费者仍需模型核对。
+
+归档保留原文、适用时期、理由与后继，从历史入口导航；归档路径即使误标 stable 也不进入默认查询。应用保存仓库外私有备份与 journal，可用 `recover ./context-kg` 恢复，并拒绝覆盖后续并行改动。多文件写入逐项完成，不提供跨文件原子快照。详细规则、计划字段与恢复命令见[全库治理流程](../skills/knowledge-maintainer/references/knowledge-governance.md)。启用 QMD 后执行同步，再验证当前和历史检索。
 
 ### 8. 生成会话结束摘要
 

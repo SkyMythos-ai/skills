@@ -32,7 +32,7 @@ python3 <skill-dir>/scripts/context_kg_qmd.py ./context-kg status
      --type "Test Case" --max-chars 6000
    ```
 
-3. 根据 `path/title/description/tags`、短片段和 `matched_queries` 选择 1–3 篇原文。`score` 只表达召回顺序，`status/freshness` 与原始来源决定可信度；`draft` 或已过期内容须核验。默认排除 deprecated 与 Session Summary，历史查询才使用 `--history`；只查弃用状态可用 `--status deprecated`，Session Summary 仍须 `--history`。
+3. 根据 `path/title/description/tags`、短片段和 `matched_queries` 选择 1–3 篇原文。`score` 只表达召回顺序，`status/freshness` 与原始来源决定可信度；`draft` 或已过期内容须核验。默认排除 deprecated、任意层级的 archive 目录与 Session Summary。`--status deprecated` 可查非归档的弃用页，归档页和 Session Summary 使用 `--history`。
 4. 使用候选的 `sha256` 和 `start_line` 有界读取实时原文。Hash 不符时重新搜索；不要让缓存片段替代证据：
 
    ```bash
