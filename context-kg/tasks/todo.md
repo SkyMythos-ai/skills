@@ -9,6 +9,20 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 
 # knowledge-maintainer：OKF 与渐进式加载
 
+## 完整 GitHub URL 安装文档修正（2026-10-20）
+
+范围：按用户实际成功安装的 `npx skills add https://github.com/SkyMythos-ai/skills`，统一 README 和 docs 中的安装来源，保留指定技能、Agent 和安装范围选项。作为此前已授权发布的文档修正提交并推送；不修改 Skill 实现，不执行安装或修改本机安装副本。
+
+- [x] 核对工作区及全部当前安装、技能清单示例
+- [x] 更新仓库首页、docs 索引与两份技能指南，保留历史任务中的真实命令记录
+- [x] 检查命令来源、文档链接、知识库结构和差异，确定限定提交清单
+
+### 安装文档修正 Review
+
+- README、docs 首页与两份指南中的 9 条安装或技能清单命令统一使用 `https://github.com/SkyMythos-ai/skills`；保留 `--skill`、`--agent codex`、`--global`、`--yes` 与 `--list` 的原有用途。仓库和 docs 首页均提供用户已验证的简洁安装命令。
+- 修正 personal-development 指南对本地克隆目录的默认依赖，以及安装排查中把远端技能清单当作本机安装状态的表述。历史 Review 中曾实际运行的本地命令保持原样。
+- 9 条命令来源、23 个实际文档链接、知识库 lint 与 `git diff --check` 通过；本轮仅修改文档，未重新安装技能或重跑实现测试。提交与远端校验结果在会话交付中记录。
+
 ## 全库治理与 rebuild 提交准备（2026-10-20）
 
 用户已明确授权将本轮 knowledge-maintainer 的实现、测试、指南、调研与治理知识提交并推送到 GitHub。目标为 `origin/main`（`SkyMythos-ai/skills`），保留其他工作区和本机安装副本。

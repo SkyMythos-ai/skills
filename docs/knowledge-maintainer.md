@@ -19,16 +19,16 @@
 
 ## 安装
 
-交互式安装：
+通过完整 GitHub 仓库 URL，交互式安装指定技能：
 
 ```bash
-npx skills add TideMind/skills --skill knowledge-maintainer
+npx skills add https://github.com/SkyMythos-ai/skills --skill knowledge-maintainer
 ```
 
 全局安装到 Codex，并跳过确认：
 
 ```bash
-npx skills add TideMind/skills --skill knowledge-maintainer --agent codex --global --yes
+npx skills add https://github.com/SkyMythos-ai/skills --skill knowledge-maintainer --agent codex --global --yes
 ```
 
 项目级安装时移除 `--global`。安装后开启新的 Agent 会话，使 Skill 被重新发现。
@@ -36,7 +36,7 @@ npx skills add TideMind/skills --skill knowledge-maintainer --agent codex --glob
 可以先查看仓库中可安装的 Skill：
 
 ```bash
-npx skills add TideMind/skills --list
+npx skills add https://github.com/SkyMythos-ai/skills --list
 ```
 
 ## 快速开始
@@ -292,10 +292,10 @@ git status --short --untracked-files=all
 
 ### 安装后无法调用
 
-先开启新的 Agent 会话，再检查 Skill 是否被正确发现：
+安装命令使用本页的完整 GitHub 仓库 URL，安装后开启新的 Agent 会话。可以先列出仓库中可安装的 Skill，确认目标技能可被发现：
 
 ```bash
-npx skills add TideMind/skills --list
+npx skills add https://github.com/SkyMythos-ai/skills --list
 ```
 
 确认安装时选择了当前使用的 Agent；Codex 的 agent 标识是 `codex`。

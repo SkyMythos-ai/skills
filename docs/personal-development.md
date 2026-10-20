@@ -4,10 +4,10 @@
 
 ## 安装
 
-在本仓库根目录安装到 Codex：
+通过完整 GitHub 仓库 URL 安装到 Codex：
 
 ```bash
-npx skills add . --skill personal-development --agent codex --global --yes
+npx skills add https://github.com/SkyMythos-ai/skills --skill personal-development --agent codex --global --yes
 ```
 
 移除 `--global` 可安装到当前项目。仓库中的旧技能已由 `personal-development` 替代；若使用环境仍安装着旧技能，需在该环境移除旧副本并安装新技能。安装后开启新会话，使 Agent 重新发现技能。

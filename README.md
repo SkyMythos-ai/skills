@@ -11,16 +11,22 @@
 
 ## 使用 npx 安装
 
-交互式安装：
+使用完整 GitHub 仓库 URL，交互式选择需要安装的技能：
 
 ```bash
-npx skills add TideMind/skills --skill knowledge-maintainer
+npx skills add https://github.com/SkyMythos-ai/skills
+```
+
+只安装 `knowledge-maintainer`：
+
+```bash
+npx skills add https://github.com/SkyMythos-ai/skills --skill knowledge-maintainer
 ```
 
 全局安装到 Codex，并跳过确认：
 
 ```bash
-npx skills add TideMind/skills --skill knowledge-maintainer --agent codex --global --yes
+npx skills add https://github.com/SkyMythos-ai/skills --skill knowledge-maintainer --agent codex --global --yes
 ```
 
 如需安装到当前项目，移除 `--global`。安装完成后开启新的 Agent 会话，使技能被重新发现。

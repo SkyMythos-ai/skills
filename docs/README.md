@@ -7,6 +7,16 @@
 | `knowledge-maintainer` | 维护符合 OKF 的项目知识库，包括查询、写入、代码反向生成、ADR、缺陷复盘、重组和校验 | [使用指南](knowledge-maintainer.md) |
 | `personal-development` | 实现、修复、重构、模块/API 与企业前端设计、代码审查、工作区管理和开发交接 | [使用指南](personal-development.md) |
 
+## 安装
+
+使用完整 GitHub 仓库 URL，交互式选择技能：
+
+```bash
+npx skills add https://github.com/SkyMythos-ai/skills
+```
+
+指定技能、Agent 及项目级或全局安装的命令见各技能使用指南。
+
 ## 文档约定
 
 每个 `skills/<skill-name>/` 对应 `docs/<skill-name>.md`：
