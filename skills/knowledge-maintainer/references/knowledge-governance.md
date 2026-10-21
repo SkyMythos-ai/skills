@@ -6,14 +6,15 @@
 
 用户发送 `$knowledge-maintainer rebuild`，即要求对当前项目 `context-kg/` 执行一次完整的存量治理。可在后面指定另一个 bundle 路径，如 `$knowledge-maintainer rebuild /project/context-kg`。目标只在范围无法从项目与会话确定时澄清。已明确处于本技能的知识库治理语境时，单独 `rebuild` 等价；编译、镜像或其他应用的 rebuild 沿用其原义。
 
-这是由当前 Agent 执行的 Skill 指令。底层使用已有 `audit/plan/check/apply/recover`；全文索引的 `sync` 继续负责检索同步。
+这是由当前 Agent 执行的 Skill 指令，底层使用 `plan --rebuild/check/apply/verify`。当前模型负责语义判断，脚本负责可检查验收；不依赖额外模型。全文索引的 `sync` 继续负责检索同步。
 
-执行至以下条件满足：
+按以下步骤执行，以最后的真实树验收作为完成条件：
 
-1. 读取项目规则、schema、索引及工作区状态，盘点整个 bundle，覆盖全部知识分支、忽略文件和附件。
-2. 当前模型根据分类、命名、到期与引用线索分批读取必要正文和原始证据，为各项记录保留、更新、迁移、合并、归档、删除或待复核的处置依据。稳定 ID 优先保持；证据不足的项目保留待复核，不按名称或时间猜测失效。
-3. 由 Agent 填写有限批次计划，检查实际 diff 和快照；在本次治理授权范围内应用证据明确且检查通过的批次，并修复内部引用、相关索引和日志。遇到策略冲突、外部消费者或并行改动时记录阻断，继续独立批次；单纯生成空计划不算完成。
-4. 将批次进度、完成项、待复核与阻断项记录到项目已有任务页或 Review，执行 lint 与当前/历史查询验证；已启用 QMD 时执行 sync。最终按实际覆盖范围报告结果、恢复记录及未解决项。
+1. 冻结工作区和恢复边界，盘点整个 bundle 的 concept、索引、日志、忽略文件与附件。逐目录列出现有角色、主题和直属页数，明确目标承载目录及迁移或保留依据；混放 ADR、详细合同和执行记录的活动目录按实际职责拆分。确有共同导航价值时说明内容级保留依据，不能靠放宽 roles 或省略预算消除问题。按角色和主题提出目标 taxonomy，并在项目 schema 中说明；目录直属 concept 的导航预算由项目声明，不是 OKF 固定上限。
+2. 当前模型逐页判读正文及必要的原始证据，填写全部 concept 的角色、`current/target/historical/review` 生命周期、目标、处置与理由。类型只能提供线索，不能代替内容判断；`keep` 也须说明现有归属为何适用。命名检查保留协议版本、真实事件日期与必要工具入口；扁平目录失去导航价值时执行获授权的路径迁移，稳定 ID 不作为跳过整理的理由。
+3. 需要承接独有有效内容、规范类型或适用边界时，先执行必要的有界 `update`，保留治理前盘点、预处理 diff 和内容承接映射；已有内容无需预处理时直接生成 `plan --rebuild`。主计划覆盖当时全库快照，并逐项对应治理前的目录问题，更新元数据本身不算完成分类。主计划声明逐页决策、目标目录规则及真实当前/历史检索探针；`check` 审阅拟议树与 diff，处理断链、替代环、外部消费者及并行变化，再 `apply`。原始附件和未知元数据语义保留。
+4. 历史页实际迁入 `archive/` 并标记 `deprecated`，保留原文、时段、理由、依据及真实后继；活动索引只通过历史目录入口导航。归档报告中的未解决业务验收项须在当前任务页有明确承接，归档不表示业务问题已解决。仍有效的目标方案保留为目标知识，不能仅凭未验收或日期旧就归档。
+5. 用 `verify` 检查应用后的真实树，再运行 lint；已启用 QMD 时同步并复验。交付记录覆盖数、角色分布、迁移与归档数、目录整理前后分布、当前与历史探针结果、恢复入口及待核验项。`completion: complete`、无阻断且无文档待判读才可报告 rebuild 完成；`needs-review/blocked` 须列明剩余项。已合理组织的全 `keep` 可以完成，但元数据更新数或空计划不能代替分类与历史隔离验收。
 
 指令范围为知识库整理，沿用已有提交、推送和部署边界。首次启用 Skill 不自行运行 rebuild；日常变更继续按增量维护处理。
 
@@ -25,7 +26,7 @@
 | --- | --- |
 | `business/` | `domain/` 术语与模型、`requirements/` 需求、`rules/` 规则、`decisions/` 产品取舍 |
 | `technical/` | `architecture/` 架构、`adr/` 决策、`contracts/` 合同、`standards/` 持续规范、`research/` 调研、`operations/` 运维 |
-| `quality/` | `test-cases/` 用例、`standards/` 质量规范、`verification/` 执行证据、`incidents/` 复盘 |
+| `quality/` | `strategies/` 持续测试策略、`test-cases/` 用例、`standards/` 质量规范、`verification/` 执行证据、`incidents/` 复盘 |
 | `tasks/` | 计划、Review、lessons、`session-summaries/YYYY/MM/` 连续性导航 |
 | `_meta/` | schema、taxonomy、知识包治理约定 |
 
@@ -69,7 +70,7 @@
 
 ## 可检查的本地治理
 
-以下命令中的 `SKILL_DIR` 指实际安装目录。计划与审计输出放在 bundle 外；恢复状态放在 Git 仓库外。先核对工作区，不自动暂存、提交、推送或修改安装副本。
+以下命令中的 `SKILL_DIR` 指实际安装目录。下方普通 `plan` 用于有界增量批次；`rebuild` 短指令必须使用后面的 `plan --rebuild` 验收流程。计划与审计输出放在 bundle 外；恢复状态放在 Git 仓库外。先核对工作区，不自动暂存、提交、推送或修改安装副本。
 
 ```bash
 python3 "$SKILL_DIR/scripts/context_kg_govern.py" audit ./context-kg --limit 20 --output /tmp/kg-audit.json
@@ -114,6 +115,41 @@ python3 "$SKILL_DIR/scripts/context_kg_govern.py" plan ./context-kg --output /tm
 | `restore` | `target/reason/evidence`，恢复状态为 `draft` 或 `stable`；核对当前适用性后恢复活动导航 |
 | `delete` | `reason/evidence/preservation`，说明独有内容承接目标或无剩余价值的依据；仍有消费者时先处理引用 |
 
+### rebuild 验收清单
+
+`plan --rebuild` 生成完整快照和空 manifest，当前 Agent 填写后检查。每个原 concept 必须恰有一个决策；索引、日志和附件不冒充概念覆盖。目录规则按最长前缀匹配，项目可用角色名，但 `unknown/unclassified` 必须先完成判读。完整字段示例：
+
+```json
+{
+  "mode": "rebuild",
+  "rebuild": {
+    "taxonomy": [
+      {"directory": "technical/contracts", "roles": ["contract"], "lifecycles": ["current", "target"], "max_direct_concepts": 16},
+      {"directory": "technical/archive", "roles": ["decision"], "lifecycles": ["historical"], "max_direct_concepts": 16}
+    ],
+    "decisions": [
+      {"path": "technical/cache-runtime.md", "target": "technical/contracts/cache-runtime.md", "role": "contract", "lifecycle": "current", "disposition": "move", "reason": "现行缓存运行合同按职责归类"},
+      {"path": "technical/cache.md", "target": "technical/archive/cache.md", "role": "decision", "lifecycle": "historical", "disposition": "archive", "reason": "已由运行合同承接，保留原取舍"}
+    ],
+    "probes": [
+      {"query": "cache", "include": ["technical/contracts/cache-runtime.md"], "exclude": ["technical/archive/cache.md"], "history_include": ["technical/archive/cache.md"]}
+    ]
+  }
+}
+```
+
+这是对普通计划的附加字段，不能省略生成的 `version/root/created_at/snapshot/actions`；决策的 `move/update/archive/delete` 与同源 action 一致，`merge` 由目标 `update` 与来源 `delete` 组合保全内容。`review` 可让其他安全批次继续，但最终为 `needs-review`。历史判定依据是内容与证据，探针只证明可发现和隔离，工具 complete 只证明声明与实际树自洽；目录角色、保留理由及业务语义仍须结合正文审核。至少有一个正向当前查询；存在历史页时还须有普通排除与历史命中同一页面的成对探针。
+
+```bash
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" plan ./context-kg --rebuild --output /tmp/kg-rebuild-plan.json
+# 当前 Agent 完整填写 taxonomy、decisions、probes 与 actions
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" check ./context-kg --plan /tmp/kg-rebuild-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp/kg-rebuild-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" verify ./context-kg --plan /tmp/kg-rebuild-plan.json
+```
+
+`verify` 读取应用后的真实树，检查覆盖、目标、历史状态与活动导航、目录预算、附件和检索探针，以及格式、断链和替代环。根及包含至少两个直属项的目录须有索引；现有索引须列出全部直属 concept 和子目录，真实的 `child/index.md` 与 `child/` 作为同一导航目标，代码示例不算索引覆盖。应用后原路径消失属于预期，不再按原快照要求所有文件原字节相同；调用者仍须核对语义 diff、工作区保护与实际执行结果。报告中的 `moved/archived` 来自已核对的 action，不能单靠数字宣称完成。
+
 检查并审阅实际 diff，再在任务授权范围内应用：
 
 ```bash
@@ -122,7 +158,7 @@ python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp
 python3 "$SKILL_DIR/scripts/context_kg_lint.py" ./context-kg
 ```
 
-检查覆盖源快照、大小写碰撞、目标与路径边界、证据 hash、内部 Markdown/来源与可识别 ID 引用、索引及替代链。已有格式或断链诊断采用基线对比，拟议改动不能新增问题；这不把既有全库警告宣称为零。外部代码、配置、AGENTS 等仍引用旧路径时会阻断；先做必要的有界调用方修改，再重新生成快照计划。动态构造路径、非标准链接语法和外部仓库消费者由当前模型额外核对，不能把静态扫描无命中当作没有消费者的证明。
+检查覆盖源快照、大小写碰撞、目标与路径边界、证据 hash、内部 Markdown/来源与可识别 ID 引用、索引及替代链。普通有限批次按既有格式/断链基线比较，拟议改动不能新增问题；完整 rebuild 要处理拟议树中现存的格式错误、内部断链和替代环。未恢复的历史外部来源须明确不可用，不把 warning 宣称为零。外部代码、配置、AGENTS 等仍引用旧路径时会阻断；先做必要的有界调用方修改，再重新生成快照计划。动态构造路径、非标准链接语法和外部仓库消费者由当前模型额外核对，不能把静态扫描无命中当作没有消费者的证明。
 
 工具按实际路径映射修复可解析引用，移动文档自身的相对链接也按原位置解析后重新定位；URL、非路径来源描述保持原义。受影响索引保留人工导航，局部日志追加处置记录。不要用全库字符串替换或重建所有索引代替迁移。
 

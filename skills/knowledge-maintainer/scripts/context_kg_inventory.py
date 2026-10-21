@@ -7,6 +7,7 @@ import hashlib
 import os
 import re
 import subprocess
+import sys
 from bisect import bisect_right
 from copy import deepcopy
 from datetime import date, datetime, timezone
@@ -15,6 +16,11 @@ from typing import Any, Iterator
 from urllib.parse import quote, unquote, urlsplit, urlunsplit
 
 import yaml
+try:
+    from context_kg_history import is_archive_path
+except ImportError:  # importlib 按文件加载时同目录未必在 sys.path
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from context_kg_history import is_archive_path
 
 
 MAX_FILES = 10000
@@ -134,7 +140,10 @@ def _role(path: str, metadata: dict[str, Any]) -> tuple[str, str, str]:
                    ("operation", "operations"), ("architecture", "architecture"))
     elif branch == "quality":
         choices = (("standard", "standards"), ("test case", "test-cases"),
-                   ("verification", "verification"), ("incident", "incidents"))
+                   ("verification", "verification"), ("test evidence", "verification"),
+                   ("test report", "verification"), ("quality report", "verification"),
+                   ("validation report", "verification"), ("release record", "verification"),
+                   ("test strategy", "strategies"), ("incident", "incidents"))
     elif branch in ("tasks", "_meta"):
         return branch, branch, "分支约定路径；不因 type 自动移动"
     else:
@@ -171,10 +180,17 @@ def _metadata_diagnostics(path: str, metadata: dict[str, Any], now: datetime) ->
     if _expiry(metadata.get("stale_after"), now):
         diagnostics.append(_diagnostic("stale_after_due", "review", path, "stale_after 已到期，需复核有效性"))
     status = metadata.get("status")
-    if "archive" in (part.casefold() for part in PurePosixPath(path).parts) and status != "deprecated":
+    in_archive = is_archive_path(path)
+    if status == "deprecated" and not in_archive:
+        diagnostics.append(_diagnostic("deprecated_active", "review", path, "deprecated 位于活动目录，rebuild 需隔离或解释"))
+    if in_archive and status != "deprecated":
         diagnostics.append(_diagnostic("archive_status_mismatch", "review", path, "归档路径中的页面状态不是 deprecated"))
     lifecycle = metadata.get("lifecycle")
     archived = lifecycle.get("archive") if isinstance(lifecycle, dict) else None
+    tags = metadata.get("tags")
+    if not in_archive and ((isinstance(tags, list) and any(str(tag).casefold() == "archive" for tag in tags))
+                           or archived):
+        diagnostics.append(_diagnostic("archive_marker_active", "review", path, "页面有历史归档标记但位于活动目录"))
     archive_reason = archived.get("reason") if isinstance(archived, dict) else None
     if status == "deprecated" and not (archive_reason or any(
         metadata.get(field) for field in ("deprecated_reason", "reason", "superseded_by")
@@ -192,6 +208,8 @@ def _name_diagnostics(path: str) -> list[dict[str, str]]:
         result.append(_diagnostic("name_not_kebab_case", "warning", path, "文件名不符合默认小写 kebab-case；项目例外可保留"))
     if STATUS_SUFFIX.search(name[:-3]):
         result.append(_diagnostic("status_name_review", "review", path, "文件名含状态尾缀，请复核其语义"))
+    if re.search(r"(?:^|[-_])(?:old|legacy|historical|archived|deprecated)(?:$|[-_])", name[:-3], re.I):
+        result.append(_diagnostic("historical_name_review", "review", path, "文件名含历史线索，需结合正文和证据判读"))
     return result
 
 
@@ -223,6 +241,8 @@ def _reference_target(source: str, target: str, root: Path, known_paths: set[str
     index = f"{rel.rstrip('/')}/index.md"
     if index in known_paths:
         return index, "directory"
+    if any(path.startswith(rel.rstrip("/") + "/") for path in known_paths):
+        return rel, "directory"
     return rel, "missing"
 
 
@@ -315,6 +335,11 @@ def _metadata_targets(metadata: dict[str, Any]) -> Iterator[tuple[str, str]]:
     successor = metadata.get("superseded_by")
     if isinstance(successor, str):
         yield "superseded_by", successor
+    lifecycle = metadata.get("lifecycle")
+    archive = lifecycle.get("archive") if isinstance(lifecycle, dict) else None
+    replacement = archive.get("replacement") if isinstance(archive, dict) else None
+    if isinstance(replacement, str) and replacement:
+        yield "archive_replacement", replacement
 
 
 def _concept_ref(value: str, known_paths: set[str]) -> tuple[str | None, bool]:
@@ -382,7 +407,9 @@ def reference_diagnostics(root: Path, texts: dict[str, str], known_paths: set[st
             if ambiguous:
                 diagnostics.append(_diagnostic("ambiguous_concept_link", "review", path, f"概念 basename 不唯一：{target}"))
             elif resolved is None:
-                code = "missing_successor" if kind == "superseded_by" else "missing_concept_link"
+                code = ({"superseded_by": "missing_successor",
+                         "archive_replacement": "missing_archive_replacement"}.get(kind,
+                                                                               "missing_concept_link"))
                 diagnostics.append(_diagnostic(code, "warning", path, f"概念目标缺失：{target}"))
             elif kind == "superseded_by":
                 successors[path] = resolved
@@ -452,6 +479,10 @@ def scan_bundle(root: Path, now: datetime | None = None) -> dict[str, Any]:
                 diagnostics.append(_diagnostic("invalid_frontmatter", "error", relative, str(exc)))
             diagnostics.extend(_metadata_diagnostics(relative, metadata, now))
             diagnostics.extend(_name_diagnostics(relative))
+            title = metadata.get("title")
+            if isinstance(title, str) and re.search(r"\b(?:old|legacy|historical|archived|deprecated)\b|历史|旧版|过时", title, re.I):
+                diagnostics.append(_diagnostic("historical_title_review", "review", relative,
+                                               "标题含历史线索，需结合正文和证据判读"))
             role, suggested_directory, reason = _role(relative, metadata)
             classifications.append({"path": relative, "role": role,
                                     "suggested_directory": suggested_directory, "reason": reason})
@@ -493,6 +524,18 @@ def scan_bundle(root: Path, now: datetime | None = None) -> dict[str, Any]:
                     reference["resolved"] = target_path
             references.append(reference)
     diagnostics.extend(reference_diagnostics(root, texts, known_paths))
+    for reference in references:
+        source = reference["path"]
+        target = reference.get("resolved")
+        if (PurePosixPath(source).name != "index.md" or
+                is_archive_path(source) or
+                reference["field"] != "markdown" or target not in files or
+                files[target]["kind"] != "concept"):
+            continue
+        target_meta = files[target]["metadata"]
+        if is_archive_path(target) or target_meta.get("status") == "deprecated":
+            diagnostics.append(_diagnostic("active_index_history", "review", source,
+                                           f"活动索引直接链接历史 concept：{target}"))
     return {"root": str(root), "files": files, "diagnostics": diagnostics, "counts": counts,
             "classifications": classifications, "references": references}
 
@@ -527,6 +570,20 @@ def _rebased_target(target: str, source: str, destination: str, mapping: dict[st
     encoded = quote(new_path, safe="/%:@+~!$&'*,;=-._") if "%" in parsed.path else new_path
     rebuilt = urlunsplit(("", "", encoded, parsed.query, parsed.fragment))
     return f"<{rebuilt}>" if bracketed else rebuilt
+
+
+def _rewrite_concept_ref(value: str, field: str, source: str, destination: str,
+                         mapping: dict[str, str], root: Path, known_paths: set[str]) -> str:
+    """按原位置解析一个 concept 引用，再按映射改写；无映射时保持稳定 ID。"""
+    resolved, ambiguous = _resolved_concept_ref(value, source, root, known_paths)
+    if ambiguous:
+        raise ValueError(f"{field} 概念 basename 不唯一：{value}")
+    if value.startswith(("/", "./", "../")):
+        return _rebased_target(value, source, destination, mapping, root, known_paths)
+    if resolved in mapping:
+        target = mapping[resolved]
+        return target if value.endswith(".md") else target[:-3]
+    return value
 
 
 def rewrite_document(text: str, source_path: str, destination_path: str,
@@ -572,27 +629,19 @@ def rewrite_document(text: str, source_path: str, destination_path: str,
             for index, link in enumerate(links):
                 if not isinstance(link, str):
                     continue
-                resolved, ambiguous = _resolved_concept_ref(link, source_path, root, known_paths)
-                if ambiguous:
-                    raise ValueError(f"links 概念 basename 不唯一：{link}")
-                if link.startswith(("/", "./", "../")):
-                    links[index] = _rebased_target(link, source_path, destination_path,
-                                                   mapping, root, known_paths)
-                elif resolved in mapping:
-                    target = mapping[resolved]
-                    links[index] = target if link.endswith(".md") else target[:-3]
+                links[index] = _rewrite_concept_ref(link, "links", source_path, destination_path,
+                                                    mapping, root, known_paths)
         successor = metadata.get("superseded_by")
         if isinstance(successor, str):
-            resolved, ambiguous = _resolved_concept_ref(successor, source_path, root, known_paths)
-            if ambiguous:
-                raise ValueError(f"superseded_by 概念 basename 不唯一：{successor}")
-            if successor.startswith(("/", "./", "../")):
-                metadata["superseded_by"] = _rebased_target(
-                    successor, source_path, destination_path, mapping, root, known_paths
-                )
-            elif resolved in mapping:
-                target = mapping[resolved]
-                metadata["superseded_by"] = target if successor.endswith(".md") else target[:-3]
+            metadata["superseded_by"] = _rewrite_concept_ref(
+                successor, "superseded_by", source_path, destination_path, mapping, root, known_paths)
+        lifecycle = metadata.get("lifecycle")
+        archive = lifecycle.get("archive") if isinstance(lifecycle, dict) else None
+        replacement = archive.get("replacement") if isinstance(archive, dict) else None
+        if isinstance(replacement, str) and replacement:
+            archive["replacement"] = _rewrite_concept_ref(
+                replacement, "lifecycle.archive.replacement", source_path, destination_path,
+                mapping, root, known_paths)
         new_body = "".join(rewritten)
         if metadata == original_metadata and new_body == original_body:
             return text

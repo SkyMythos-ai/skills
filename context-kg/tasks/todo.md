@@ -9,6 +9,40 @@ generated: { by: codex/gpt-5, at: 2026-08-22T00:00:00+08:00 }
 
 # knowledge-maintainer：OKF 与渐进式加载
 
+## rebuild 验收补齐提交准备（2026-10-21）
+
+用户授权将本轮 knowledge-maintainer 的实现、测试、使用指南和治理记录提交并推送到 `SkyMythos-ai/skills` 的 `main`；限定 12 个本仓库任务文件，不提交 ai-gateway 的独立工作区、私有审计产物或本机安装备份。
+
+- [x] 确认 main 与 origin/main 一致、暂存区为空，核对全部任务改动与新增文件。
+- [x] 核对全部 18 份 Skill 文件与刚完成真实 QMD 2.8.3 的 94 项无跳过测试版本逐字节一致。
+- [x] 完成 Python 编译、Skill quick validation、知识库 lint 与差异空白检查，确定限定暂存清单。
+
+提交及远端校验结果以本次会话最终交付为准。
+
+## knowledge-maintainer 本机安装同步（2026-10-21）
+
+按用户要求，将仓库内已验证的新版同步到 `/Users/chuntao.liao/.agents/skills/knowledge-maintainer`。同步前确认安装版无独立修改；更新 8 个文件（含 2 个新增文件），同步后全部 18 份有效文件与仓库逐字节一致。旧版完整备份在 `/Users/chuntao.liao/.agents/backups/knowledge-maintainer-20261021-dum_syg6/installed-before`。
+
+安装版 Skill quick validation、`verify --help` 和全部 94 项测试通过（真实 QMD 2.8.3、无跳过）。本轮仅同步本机安装及记录结果，不修改 ai-gateway，也未提交或推送。
+
+## rebuild 可检查验收与 ai-gateway 实证（2026-10-21）
+
+范围：补齐全库分类、历史隔离和检索验收，并按用户授权实际整理 ai-gateway 知识库。保护该项目已有 monorepo 改动及 Git 索引，保留原文、来源、附件和未决边界；不修改业务实现，不更新安装副本，不提交、推送或部署。
+
+- [x] 复核失败原因，冻结 skills 工作区与 ai-gateway 原始知识、Git 状态和外围文件 hash
+- [x] 实现完整分类处置清单、目标 taxonomy、活动索引历史检查及检索探针验收
+- [x] 分支判读 ai-gateway 全部知识角色与生命周期，形成可检查迁移计划
+- [x] 实际应用分类和历史归档，修复索引、来源、引用及本地规则
+- [x] 独立复核、运行相关回归与真实知识库验证，记录结果和恢复入口
+
+### Review
+
+- 实现 `plan --rebuild` 的逐页处置、目标 taxonomy 与真实检索探针，`verify` 对应用后的真实树检查完整覆盖、历史状态、活动导航、目录预算、附件、格式/断链与替代链；unknown、文档待复核和阻断分别报告。根及多节点目录的索引必须覆盖全部直属项。
+- 修复实际复核发现的组合归档后继漏改、archive 大小写与代码示例误报，以及目录 `/` 和 `/index.md` 的导航重复/误报。保留归档原路径、证据 hash 和未知元数据语义。
+- 对真实知识库的原 142 页执行 83 次角色/主题移动、49 次历史归档、10 页保留；有效独有内容先承接，新增 1 页当前验证策略，共 143 concept、47 index。原 ADR/quality 大量平铺改为角色与主题导航，所有历史页实际进入 archive 且 deprecated；未把旧版本测试或待验收目标升级为现行实现。
+- 全套 94 项测试通过（真实 QMD 2.8.3、无跳过），Skill quick validation、本仓库及目标知识库 lint、Python 编译与差异检查通过。实际树 verify complete、0 blocker/0 review，9 个无状态探针和真实 QMD 的 9 个当前/历史用例通过；完整治理前后差异及恢复记录保存在目标项目本机私有审计目录，未复制其正文到本仓库。
+- 外围 654 项路径、6 份原始附件及 Git HEAD/index 已核对；仅 6 份文档和 3 份 Rust 源文件的 4 行注释作精确知识路径修复，业务逻辑未变。未提交、推送、部署或同步本机安装副本；真实业务待验收项保留在目标当前任务入口。
+
 ## 完整 GitHub URL 安装文档修正（2026-10-20）
 
 范围：按用户实际成功安装的 `npx skills add https://github.com/SkyMythos-ai/skills`，统一 README 和 docs 中的安装来源，保留指定技能、Agent 和安装范围选项。作为此前已授权发布的文档修正提交并推送；不修改 Skill 实现，不执行安装或修改本机安装副本。

@@ -52,7 +52,7 @@ sources:
 | --- | --- | --- |
 | `business/` | `domain/` 术语与模型、`requirements/` 产品需求、`rules/` 业务规则、`decisions/` 产品取舍 | 批准依据、适用对象、生效条件和需求变更原因。技术决策仍路由到 technical/adr。 |
 | `technical/` | `architecture/` 总览、`adr/` 技术决策、`contracts/` 接口与运行合同、`standards/` 持续规范、`research/` 调研、`operations/` 运维 | 区分决策理由、规范性目标、实际实现、操作步骤和研究证据。 |
-| `quality/` | `test-cases/` 测试用例、`standards/` 测试表达与质量约束、`verification/` 验证记录、`incidents/` 缺陷复盘 | 区分要验证什么、如何表达测试、已经执行过什么及其结果。 |
+| `quality/` | `strategies/` 持续测试策略、`test-cases/` 测试用例、`standards/` 测试表达与质量约束、`verification/` 验证记录、`incidents/` 缺陷复盘 | 区分要验证什么、如何表达测试、已经执行过什么及其结果。 |
 | `tasks/` | 计划、Review、任务记录、`session-summaries/YYYY/MM/` 连续性导航 | 只承载过程与恢复入口；稳定结论迁到其权威角色，保留链接。 |
 | `_meta/` | schema、taxonomy、全库治理约定 | 描述知识包自身，不混入产品架构或业务需求。 |
 
@@ -116,7 +116,11 @@ ADR 记录一次重要选择的背景、决定和后果；详细合同、持续�
 
 验收覆盖：全部分支都参与盘点；同 basename 不误判重复；新命名缺省与既有 ID 例外可区分；日期快照与持续权威页可区分；真实领域版本不被抹除；批准目标和实际实现不混同；忽略文件及未知元数据不丢失；改名后相对链接和来源仍可定位；归档默认隐藏且历史可读；失败可恢复，遇到并行改动保留诊断与备份。
 
-实现入口为 `context_kg_govern.py audit/plan/check/apply/recover`：盘点与命名诊断不读取整库正文进入模型，分类建议不自动成为迁移动作；宿主依据有限候选和证据填写计划，脚本检查 hash、路径、引用、索引及替代环，并提供 diff 和恢复记录。工具验证证据文件及 hash，不能代替模型判断批准、生效、部分替代、历史价值或未知消费者。
+实现入口为 `context_kg_govern.py audit/plan/check/apply/verify/recover`：盘点与命名诊断不读取整库正文进入模型，分类建议不自动成为迁移动作；宿主依据有限候选和证据填写计划，脚本检查 hash、路径、引用、索引及替代环，并提供 diff 和恢复记录。工具验证证据文件及 hash，不能代替模型判断批准、生效、部分替代、历史价值或未知消费者。
+
+显式 `rebuild` 使用 `plan --rebuild`：在普通快照/actions 上增加目标 taxonomy、覆盖原全库 concept 的逐页角色/生命周期/处置理由及真实检索探针。分类已合理的页面可以保留，扁平目录的治理须实际改善导航；历史页真实迁入 archive、标 deprecated，并从活动索引直接概念列表移除。独有有效内容先承接到当前页，历史开放业务验收继续在当前任务入口承接。
+
+`check` 检查完整拟议树，`verify` 重验应用后的真实树；完整 rebuild 对既存格式错误、内部断链和替代环同样阻断。目录预算由项目声明，不是 OKF 通用规则。至少有一个正向当前探针，有历史时须成对验证普通排除与历史命中；`unknown/unclassified` 或文档仍待判读不能报告 complete。执行成功后根据实际覆盖、目录前后分布、移动/归档数与探针结果报告 `complete/needs-review/blocked`。语义真伪与合法正文漂移仍由宿主审阅，不把结构检查升级为业务验收。详细字段以[全库治理流程](../../../skills/knowledge-maintainer/references/knowledge-governance.md)为准。
 
 外部静态路径命中会阻断，动态构造路径、未识别的项目扩展和外部仓库消费者由宿主补查。移动文档的内部引用、真实来源路径和已知扩展关系由工具修复；静态扫描无命中不证明没有消费者。多文件应用不提供跨文件原子快照。分类、命名和失效处置不调用额外模型，也没有自动重命名任何 Fusion 页面。
 

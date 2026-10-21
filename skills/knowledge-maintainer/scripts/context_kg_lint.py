@@ -186,11 +186,16 @@ def direct_knowledge_items(directory: Path) -> list[Path]:
 def validate_index_profile(
     directory: Path, root: Path, body: str, warnings: list[str]
 ) -> None:
-    referenced = {
-        target.resolve()
-        for raw_target, _ in INDEX_ENTRY.findall(body)
-        if (target := link_target(directory / "index.md", root, raw_target)) is not None
-    }
+    referenced = set()
+    for raw_target, _ in INDEX_ENTRY.findall(body):
+        target = link_target(directory / "index.md", root, raw_target)
+        if target is None:
+            continue
+        resolved = target.resolve()
+        # 治理器用 child/index.md 链到目录索引；仅已存在的 index 才代表直属目录。
+        if resolved.name == "index.md" and resolved.is_file():
+            resolved = resolved.parent
+        referenced.add(resolved)
     for item in direct_knowledge_items(directory):
         if item.resolve() not in referenced:
             warnings.append(f"{directory / 'index.md'}: 未列出直属项 {item.name}")

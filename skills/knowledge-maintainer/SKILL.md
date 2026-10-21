@@ -11,7 +11,7 @@ description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 
 
 ## 操作路由
 
-- **`rebuild` 短指令**：`$knowledge-maintainer rebuild [bundle-path]` 触发[全库存量治理](references/knowledge-governance.md#rebuild-短指令)。默认目标为当前项目的 `context-kg/`；已明确讨论本技能的知识库治理时可简写 `rebuild`，其他构建语境中的同名命令沿用其原义。
+- **`rebuild` 短指令**：`$knowledge-maintainer rebuild [bundle-path]` 触发[全库存量治理](references/knowledge-governance.md#rebuild-短指令)，逐页判读、执行分类与历史隔离，并以真实树 `verify` 验收。默认目标为当前项目的 `context-kg/`；已明确讨论本技能的知识库治理时可简写 `rebuild`，其他构建语境中的同名命令沿用其原义。
 - **读取或回答问题**：执行“快速渐进式检索”，先返回少量候选路径，再只加载回答所需的知识。
 - **写入或反向生成**：先收集证据并完成生命周期对账，再按 OKF 页面契约写入并同步索引与日志。
 - **分类、命名或生命周期治理**：读取[全库治理](references/knowledge-governance.md)。先盘点，再由当前模型结合证据填充有限批次计划；检查路径、引用和快照后应用，保留恢复记录。

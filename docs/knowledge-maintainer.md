@@ -188,23 +188,26 @@ Ctrl-C 退出，不注册后台服务。缓存默认位于用户缓存目录并�
 $knowledge-maintainer rebuild
 ```
 
-默认目标为当前项目 `context-kg/`，也可指定 `$knowledge-maintainer rebuild /project/context-kg`。已明确讨论本技能的知识库治理时可直接说 `rebuild`；其他构建场景中的同名命令保留原义。Agent 会盘点、分批判读证据、填写并检查计划、执行有依据的整理，将进度及待复核项记入项目任务记录；提交、推送和部署仍按既有授权处理。短指令由 Agent 解释，底层 CLI 继续使用下文的五个子命令。
+默认目标为当前项目 `context-kg/`，也可指定 `$knowledge-maintainer rebuild /project/context-kg`。已明确讨论本技能的知识库治理时可直接说 `rebuild`；其他构建场景中的同名命令保留原义。Agent 会盘点、分批判读证据、填写并检查计划、执行有依据的整理，将进度及待复核项记入项目任务记录；提交、推送和部署仍按既有授权处理。短指令由当前 Agent 解释语义，无额外模型依赖；底层用 `plan --rebuild/check/apply/verify` 检查并执行。
 
 治理覆盖 `business/`、`technical/`、`quality/`、`tasks/`、`_meta/`、自定义分支及附件。按知识角色分类后再按领域下钻：ADR 记录选择和取舍，合同、持续规范、调研、运行证据分别维护。命名默认小写 kebab-case，标题说明对象和职责；同 basename、真实协议版本、事件日期和项目既有稳定 ID 可以保留。命名偏好产生提示，不充当 OKF 格式错误。
 
 `status: deprecated` 只适合仍有审计、迁移或兼容价值的历史 concept，默认查询不会把它当作当前结论。它不是废弃内容的默认归宿；没有剩余价值的内容应直接移除。删除前会先把旧页中仍有效的独有内容迁移到权威页面；证据不足以判断是否仍有消费者时，Skill 会先把冲突隔离为待决事项，而不会猜测性删除。
 
-脚本提供盘点、计划、检查、应用和恢复；当前模型读取有限候选及原始证据，决定是否移动、更新、归档或删除。`stale_after` 到期只提示复核，`stable` 也不等于需求已生效或实现已通过验收。无需额外模型或 API 凭据。
+脚本提供盘点、计划、检查、应用、真实树验收和恢复；当前模型读取有限候选及原始证据，决定是否移动、更新、归档或删除。`stale_after` 到期只提示复核，`stable` 也不等于需求已生效或实现已通过验收。无需额外模型或 API 凭据。
 
 ```bash
 python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py audit ./context-kg --limit 20 --output /tmp/kg-audit.json
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py plan ./context-kg --output /tmp/kg-plan.json
-# 由当前模型依据证据填写计划中的 actions，再审阅 check 返回的 diff。
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py plan ./context-kg --rebuild --output /tmp/kg-plan.json
+# 由当前模型依据证据填写 actions、taxonomy、decisions 和 probes，再审阅 diff。
 python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py check ./context-kg --plan /tmp/kg-plan.json
 python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py apply ./context-kg --plan /tmp/kg-plan.json
+python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py verify ./context-kg --plan /tmp/kg-plan.json
 ```
 
-计划记录全库 hash 和跟踪边界；执行前检查文件集合、证据、路径碰撞与引用，修复可解析的内部 Markdown 链接、来源路径、已知概念 ID 和受影响索引。外部代码或配置仍引用旧路径时阻断，先修好调用方并重建计划。不会自动迁移到新目录或把忽略文件变成共享文件。动态路径与外部仓库消费者仍需模型核对。
+rebuild 计划须填写目标目录规则、覆盖每页的角色/生命周期/处置及理由，以及真实当前与历史检索探针。逐目录记录角色、主题、直属页数与目标目录，混放的不同职责实际拆分或给出内容级保留依据。已归类的页面可以保留；扁平目录须按角色与主题实际改善导航，历史页须实际进入 archive 并退出活动候选。`verify` 的 `completion: complete` 且无阻断、无文档待判读才表示本轮完成；业务待验收项单独保留在当前任务入口。完整字段见下方全库治理流程。
+
+计划记录全库 hash 和跟踪边界；执行前检查文件集合、证据、路径碰撞与引用，修复可解析的内部 Markdown 链接、来源路径、已知概念 ID 和受影响索引。外部代码或配置仍引用旧路径时阻断，先修好调用方并重建计划。Agent 根据证据填写实际迁移、归档或保留动作；忽略文件保留原共享边界。动态路径与外部仓库消费者仍需模型核对。
 
 归档保留原文、适用时期、理由与后继，从历史入口导航；归档路径即使误标 stable 也不进入默认查询。应用保存仓库外私有备份与 journal，可用 `recover ./context-kg` 恢复，并拒绝覆盖后续并行改动。多文件写入逐项完成，不提供跨文件原子快照。详细规则、计划字段与恢复命令见[全库治理流程](../skills/knowledge-maintainer/references/knowledge-governance.md)。启用 QMD 后执行同步，再验证当前和历史检索。
 

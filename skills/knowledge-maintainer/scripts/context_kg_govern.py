@@ -27,6 +27,8 @@ from context_kg_inventory import (
     parse_document, reference_diagnostics, render_document, rewrite_document, scan_bundle,
 )
 from context_kg_lint import validate_concept, validate_index, validate_log
+from context_kg_history import is_archive_path
+from context_kg_rebuild import assess_rebuild
 
 
 VERSION = 1
@@ -187,7 +189,7 @@ def _errors(root: Path, tree: dict[str, bytes]) -> Counter[tuple[str, str]]:
         for message in local:
             failures[(rel, message.split(": ", 1)[-1])] += 1
     for item in reference_diagnostics(root, texts, set(tree)):
-        if item["code"].startswith("broken_") or item["severity"] == "error" or item["code"] in ("missing_successor", "missing_concept_link"):
+        if item["code"].startswith("broken_") or item["severity"] == "error" or item["code"] in ("missing_successor", "missing_concept_link", "missing_archive_replacement"):
             message = item["message"]
             if item["code"] == "broken_markdown_link":
                 raw = message.rsplit("：", 1)[-1].strip("<>")
@@ -208,9 +210,12 @@ def _nav_target(line: str, source: str) -> str | None:
     target = match.group(1).split("#", 1)[0]
     if re.match(r"^[a-z]+://", target):
         return None
-    if target.startswith("/"):
-        return target.lstrip("/")
-    return os.path.normpath(os.path.join(os.path.dirname(source), target)).replace(os.sep, "/")
+    directory_link = target.endswith("/")
+    resolved = (target.lstrip("/") if target.startswith("/") else
+                os.path.normpath(os.path.join(os.path.dirname(source), target)).replace(os.sep, "/"))
+    if directory_link:
+        return f"{resolved.rstrip('/')}/index.md" if resolved not in ("", ".") else "index.md"
+    return resolved
 
 
 def _index_remove(tree: dict[str, bytes], parent: str, target: str) -> None:
@@ -257,7 +262,7 @@ def _maintain_navigation(tree: dict[str, bytes], old: str, new: str | None, reas
 
 def _remove_active_archive_navigation(tree: dict[str, bytes], old: str) -> None:
     for index in list(tree):
-        if PurePosixPath(index).name != "index.md" or "archive" in PurePosixPath(index).parts:
+        if PurePosixPath(index).name != "index.md" or is_archive_path(index):
             continue
         if index not in tree:
             continue
@@ -444,7 +449,7 @@ def _action_tree(root: Path, plan: dict[str, Any], inventory: dict[str, Any],
             if target == path:
                 raise GovernanceError(f"迁移目标等于源文件：{path}")
             if op == "archive":
-                if "archive" not in PurePosixPath(target).parts:
+                if not is_archive_path(target):
                     raise GovernanceError("archive 目标必须位于 archive 目录")
                 if not isinstance(action.get("effective_period"), str) or not action["effective_period"].strip():
                     raise GovernanceError("archive 需要 effective_period")
@@ -455,7 +460,7 @@ def _action_tree(root: Path, plan: dict[str, Any], inventory: dict[str, Any],
                         raise GovernanceError("replacement 必须指向已有的其他 concept")
                     action["replacement"] = replacement
             if op == "restore":
-                if "archive" not in PurePosixPath(path).parts or "archive" in PurePosixPath(target).parts:
+                if not is_archive_path(path) or is_archive_path(target):
                     raise GovernanceError("restore 必须从 archive 目录迁回活动目录")
                 if action.get("status", "stable") not in {"stable", "draft"}:
                     raise GovernanceError("restore status 仅允许 stable 或 draft")
@@ -576,7 +581,7 @@ def audit_bundle(root: Path, limit: int = 30) -> dict[str, Any]:
     return scan_bundle(root.expanduser().resolve())
 
 
-def create_plan(root: Path, output: Path) -> dict[str, Any]:
+def create_plan(root: Path, output: Path, *, rebuild: bool = False) -> dict[str, Any]:
     """生成只含快照的计划；action 由宿主填入，调用不修改 bundle。"""
     root = root.expanduser().resolve()
     output = output.expanduser().resolve()
@@ -587,6 +592,9 @@ def create_plan(root: Path, output: Path) -> dict[str, Any]:
         raise GovernanceError("bundle 根目录或 index 缺失")
     plan = {"version": VERSION, "root": str(root), "created_at": datetime.now(timezone.utc).isoformat(),
             "snapshot": _snapshot(inventory), "actions": []}
+    if rebuild:
+        plan["mode"] = "rebuild"
+        plan["rebuild"] = {"taxonomy": [], "decisions": [], "probes": []}
     output.parent.mkdir(parents=True, exist_ok=True)
     _atomic_write(output, _json(plan).encode("utf-8"))
     return plan
@@ -596,7 +604,7 @@ def _check_plan_details(root: Path, plan_file: Path) -> tuple[dict[str, Any], di
     root = root.expanduser().resolve()
     plan = _load_plan(root, plan_file)
     inventory, before = _check_snapshot(root, plan)
-    if not plan["actions"]:
+    if not plan["actions"] and plan.get("mode") != "rebuild":
         return {"status": "no-op", "actions": 0, "changed": [], "deleted": [],
                 "warnings": ["计划没有 action"], "blockers": [], "diff": ""}, before, before.copy()
     after, mapping, warnings = _action_tree(root, plan, inventory, before)
@@ -612,15 +620,33 @@ def _check_plan_details(root: Path, plan_file: Path) -> tuple[dict[str, Any], di
                                          {plan_file.resolve()}))
     changed = sorted(rel for rel, raw in after.items() if before.get(rel) != raw)
     deleted = sorted(set(before) - set(after))
+    acceptance = None
+    if plan.get("mode") == "rebuild":
+        acceptance = assess_rebuild(root, plan, set(before), after)
+        blockers.extend(acceptance["blockers"])
     report = {"status": "blocked" if blockers else "ready", "actions": len(plan["actions"]),
               "changed": changed, "deleted": deleted, "moves": mapping, "warnings": warnings,
               "blockers": blockers, "diff": _diff(before, after)}
+    if acceptance is not None:
+        report["acceptance"] = acceptance
     return report, before, after
 
 
 def check_plan(root: Path, plan_file: Path) -> dict[str, Any]:
     """对全快照和拟议结果作只读检查；返回可审阅 diff 与 blocker。"""
     return _check_plan_details(root, plan_file)[0]
+
+
+def verify_plan(root: Path, plan_file: Path) -> dict[str, Any]:
+    """只读核对已应用的 rebuild；原 snapshot 不再要求等于实际文件。"""
+    root = root.expanduser().resolve()
+    plan = _load_plan(root, plan_file)
+    if plan.get("mode") != "rebuild":
+        raise GovernanceError("verify 只接受 rebuild 计划")
+    inventory = scan_bundle(root)
+    tree = _read_tree(root, inventory)
+    report = assess_rebuild(root, plan, set(plan["snapshot"]), tree, verify=True)
+    return report
 
 
 def _fsync_dir(path: Path) -> None:
@@ -868,6 +894,7 @@ def main(argv: list[str] | None = None) -> int:
     plan = commands.add_parser("plan")
     plan.add_argument("root", type=Path)
     plan.add_argument("--output", type=Path, required=True)
+    plan.add_argument("--rebuild", action="store_true")
     for name in ("check", "apply"):
         command = commands.add_parser(name)
         command.add_argument("root", type=Path)
@@ -877,6 +904,9 @@ def main(argv: list[str] | None = None) -> int:
     recovery = commands.add_parser("recover")
     recovery.add_argument("root", type=Path)
     recovery.add_argument("--state-dir", type=Path)
+    verification = commands.add_parser("verify")
+    verification.add_argument("root", type=Path)
+    verification.add_argument("--plan", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "audit":
@@ -890,16 +920,23 @@ def main(argv: list[str] | None = None) -> int:
                          "diagnostic_count": len(result["diagnostics"]),
                          "diagnostics": result["diagnostics"][:args.limit]}), end="")
         elif args.command == "plan":
-            result = create_plan(args.root, args.output)
-            print(_json({"root": result["root"], "created_at": result["created_at"],
-                         "plan": str(args.output.expanduser().resolve()),
-                         "files": len(result["snapshot"]), "actions": 0}), end="")
+            result = create_plan(args.root, args.output, rebuild=args.rebuild)
+            summary = {"root": result["root"], "created_at": result["created_at"],
+                       "plan": str(args.output.expanduser().resolve()),
+                       "files": len(result["snapshot"]), "actions": 0}
+            if args.rebuild:
+                summary["mode"] = "rebuild"
+            print(_json(summary), end="")
         elif args.command == "check":
             result = check_plan(args.root, args.plan)
             print(_json(result), end="")
             return 2 if result["blockers"] else 0
         elif args.command == "apply":
             print(_json(apply_plan(args.root, args.plan, args.state_dir)), end="")
+        elif args.command == "verify":
+            result = verify_plan(args.root, args.plan)
+            print(_json(result), end="")
+            return 2 if result["blockers"] else 0
         else:
             print(_json(recover(args.root, args.state_dir)), end="")
         return 0

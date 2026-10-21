@@ -111,6 +111,23 @@ class ContextKgLintTest(unittest.TestCase):
         self.assertEqual(0, result, output)
         self.assertIn("technical/index.md: 缺失", output)
 
+    def test_existing_child_index_link_counts_as_direct_directory(self) -> None:
+        result, output = self.lint({
+            "index.md": "# Knowledge\n\n- [Technical](technical/index.md) - 技术\n",
+            "technical/index.md": "# Technical\n\n- [Cache](cache.md) - 缓存\n",
+            "technical/cache.md": "---\ntype: Reference\n---\n# Cache\n",
+        })
+        self.assertEqual(0, result, output)
+        self.assertNotIn("未列出直属项 technical", output)
+
+    def test_missing_child_index_link_does_not_satisfy_directory(self) -> None:
+        result, output = self.lint({
+            "index.md": "# Knowledge\n\n- [Technical](technical/index.md) - 技术\n",
+            "technical/cache.md": "---\ntype: Reference\n---\n# Cache\n",
+        })
+        self.assertEqual(0, result, output)
+        self.assertIn("未列出直属项 technical", output)
+
 
 if __name__ == "__main__":
     unittest.main()
