@@ -32,6 +32,9 @@ jobs:
       - name: knowledge-maintainer 单测
         run: python -B -m unittest discover -s skills/knowledge-maintainer/tests -v
 
+      - name: personal-development 单测
+        run: python -B -m unittest discover -s skills/personal-development/tests -v
+
       - name: 本仓库 context-kg lint
         run: python -B skills/knowledge-maintainer/scripts/context_kg_lint.py ./context-kg
 

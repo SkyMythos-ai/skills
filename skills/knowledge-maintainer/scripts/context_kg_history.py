@@ -1,4 +1,9 @@
-"""共享 Context-KG 历史内容隔离规则。"""
+"""共享 Context-KG 历史内容隔离规则。
+
+语义表（默认 / `--status deprecated` / `--history` / 两者组合）定义在
+`references/local-retrieval.md` 的「历史内容隔离语义」一节；本模块是唯一实现，
+`context_kg_search.py` 与 `context_kg_qmd.py` 必须调用这里，不得各写一份判定。
+"""
 
 from __future__ import annotations
 
@@ -29,7 +34,10 @@ def history_allowed(
     history: bool,
     status_filter: str | None = None,
 ) -> bool:
-    """判断历史内容能否进入本次搜索；显式 deprecated 不绕过 archive。"""
+    """判断历史内容能否进入本次搜索；显式 deprecated 不绕过 archive。
+
+    四种组合的预期结果见 `references/local-retrieval.md#历史内容隔离语义`。
+    """
     if history:
         return True
     if is_archive_path(relative_path) or is_session_summary(relative_path, metadata):

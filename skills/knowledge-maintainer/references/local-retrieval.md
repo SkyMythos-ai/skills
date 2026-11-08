@@ -32,7 +32,7 @@ python3 <skill-dir>/scripts/context_kg_qmd.py ./context-kg status
      --type "Test Case" --max-chars 6000
    ```
 
-3. 根据 `path/title/description/tags`、短片段和 `matched_queries` 选择 1–3 篇原文。`score` 只表达召回顺序，`status/freshness` 与原始来源决定可信度；`draft` 或已过期内容须核验。默认排除 deprecated、任意层级的 archive 目录与 Session Summary。`--status deprecated` 可查非归档的弃用页，归档页和 Session Summary 使用 `--history`。
+3. 根据 `path/title/description/tags`、短片段和 `matched_queries` 选择 1–3 篇原文。`score` 只表达召回顺序，`status/freshness` 与原始来源决定可信度；`draft` 或已过期内容须核验。状态与历史的默认隔离、各参数组合语义统一见[历史内容隔离语义](#历史内容隔离语义)。
 4. 使用候选的 `sha256` 和 `start_line` 有界读取实时原文。Hash 不符时重新搜索；不要让缓存片段替代证据：
 
    ```bash
@@ -42,6 +42,24 @@ python3 <skill-dir>/scripts/context_kg_qmd.py ./context-kg status
 
    每次最多 120 行，完整 JSON 默认受 6,000 字符预算约束。`has_more` 为真时，将 `next_line` 传给下一次的 `--start-line`、`next_column` 传给 `--start-column`，并保持同一 `--expected-hash`；行内列偏移从 0 开始，按字符计数。这样超长单行也能连续读取，不会反复返回前缀或跳过被截断的内容。必要时沿原文链接读取一跳证据，按主 Skill 的停止条件结束。
 5. 零候选时，先检查是否为依赖/同步失败，再调整词语或扩大 scope。多词 AND 组合可能过强：下一轮先拆为最多 4 个独立主题词或精确键分别查询，例如 `退款 幂等` 无结果时尝试 `退款`、`幂等`，由当前 Agent 筛选近邻，不把所有扩展词继续堆进同一个 AND。查询改写最多额外两轮；有候选但不能覆盖问题也应说明缺少证据。`candidates=[]` 与非空近邻都不能自动决定答案。宿主支持且收益明确时，可让已有的便宜子模型只查看问题与有限候选；选择模型和认证由宿主承担，主 Agent 复核原文，不能把新模型设成必需依赖。
+
+## 历史内容隔离语义
+
+本节的表是历史内容隔离的唯一定义；`SKILL.md`、`docs/` 与实现注释均引用本节，不重复规则正文。实现位于共享规则 [context_kg_history.py](../scripts/context_kg_history.py) 的 `history_allowed`，`context_kg_search.py` 与 `context_kg_qmd.py` 都调用它，避免两条检索路径漂移。
+
+| 命令组合 | 任意层级 `archive/` 页 | Session Summary | 非归档 `deprecated` 页 | 典型用途 |
+| --- | --- | --- | --- | --- |
+| 默认（无参数） | 排除 | 排除 | 排除 | 回答当前结论 |
+| `--status deprecated` | 排除 | 排除 | 保留（且只取 `deprecated`） | 核对仍有参考价值的弃用页 |
+| `--history` | 保留 | 保留 | 保留 | 追溯沿革与替代链 |
+| `--history --status deprecated` | 保留 | 保留 | 保留，且只取 `deprecated` | 只查看历史弃用页 |
+
+规则要点：
+
+- 归档判定看 bundle 相对路径中是否存在完整的 `archive` 路径分量；`archive-storage.md` 这类普通文件名不算归档。
+- 归档页即使仍标 `stable` 也不进入默认候选；显式 `--status deprecated` 不绕过归档隔离，仍需 `--history`。
+- `--history` 只扩大候选范围，不改变可信度判定：历史命中不能直接当当前答案，必须结合替代链、理由与原始证据判读。
+- `--latest-session` 走单独的 Session Summary 入口，默认同样排除 `archive/` 与 `deprecated` 的摘要页。
 
 ## 文档变化与监听
 

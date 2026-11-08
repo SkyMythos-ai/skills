@@ -1,22 +1,37 @@
 ---
 name: knowledge-maintainer
-description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 知识库。用于渐进检索、增量更新、通过 rebuild 整理存量知识库、分类与命名检查、有效性复核、历史归档、会话摘要、校验或从代码生成知识，覆盖业务、技术、质量、任务与元知识。
+version: 1.6
+description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 知识库。用于渐进检索、增量更新、显式 $knowledge-maintainer rebuild 治理存量知识库、分类与命名检查、有效性复核、历史归档、会话摘要、校验或从代码反向生成知识，覆盖业务、技术、质量、任务与元知识。不适用于普通文档或用户手册写作、代码实现与重构、构建/镜像/CI 语境中的 rebuild、聊天记录摘要或无长期知识沉淀的临时问答。
 ---
 
 # Knowledge Maintainer
 
-将仓库的 `context-kg/` 维护为长期、可追溯、可渐进读取的 OKF v0.2 Knowledge Bundle。仓库内 `AGENTS.md` 和 `context-kg/_meta/schema.md` 可以增加项目约束；当其与 OKF 冲突时，说明冲突并优先产出 OKF 合规内容。
+将仓库的 `context-kg/` 维护为长期、可追溯、可渐进读取的 OKF v0.2 Knowledge Bundle。仓库内 `AGENTS.md` 和 `context-kg/_meta/schema.md` 可以增加项目约束；没有 `_meta/schema.md` 时按本 Skill 的默认约定工作，不强制创建。项目约束与 OKF 冲突时说明冲突并优先产出 OKF 合规内容。
 
 权威格式以 [OKF v0.2 specification](https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md) 为准。本技能采用更严格的生产者约定：为根目录和包含多个概念或子目录的目录维护 `index.md`，以保证渐进式加载稳定可用。
 
 ## 操作路由
 
-- **`rebuild` 短指令**：`$knowledge-maintainer rebuild [bundle-path]` 触发[全库存量治理](references/knowledge-governance.md#rebuild-短指令)，逐页判读、执行分类与历史隔离，并以真实树 `verify` 验收。默认目标为当前项目的 `context-kg/`；已明确讨论本技能的知识库治理时可简写 `rebuild`，其他构建语境中的同名命令沿用其原义。
-- **读取或回答问题**：执行“快速渐进式检索”，先返回少量候选路径，再只加载回答所需的知识。
-- **写入或反向生成**：先收集证据并完成生命周期对账，再按 OKF 页面契约写入并同步索引与日志。
-- **分类、命名或生命周期治理**：读取[全库治理](references/knowledge-governance.md)。先盘点，再由当前模型结合证据填充有限批次计划；检查路径、引用和快照后应用，保留恢复记录。
-- **会话收尾**：最终交付附简短的 KG 使用小结；先把长期结论写回权威 concept，需要连续性导航时再保存 Session Summary。
-- **校验**：运行随附 lint；OKF 允许但本项目不推荐的情况应报告为警告，而不是误判为格式错误。
+- **`rebuild` 短指令**：必须显式发送 `$knowledge-maintainer rebuild [bundle-path]`；只有前一轮已确认本技能的知识库治理意图时，才可以简写 `rebuild`。构建、镜像、CI 或应用重启语境中的同名命令与本技能无关，沿用其原义。执行与验收见[全库治理](references/knowledge-governance.md#rebuild-短指令)。
+- **读取或回答问题**：按下节“快速渐进式检索”执行，先返回少量候选路径，再只加载回答所需的知识。
+- **写入或反向生成**：先收集证据并完成生命周期对账，再按页面契约写入并同步索引与日志 → [生命周期对账、写入与重组](references/lifecycle-and-write.md)、[OKF 页面契约](references/okf-contract.md)。
+- **分类、命名或生命周期治理**：→ [全库治理](references/knowledge-governance.md)。先盘点，再由当前模型结合证据填写有限批次计划；检查路径、引用和快照后应用，保留恢复记录。
+- **会话收尾**：交付附简短的 KG 使用小结；需要跨会话导航时再保存 Session Summary → [会话结束摘要契约](references/session-summary.md)。
+- **校验**：运行文末 lint，并按退出码区分“内容不合规”与“无法执行”。
+
+## 快速渐进式检索
+
+检索的完成条件是问题的各个子意图已有足够、相互一致且时效可信的证据；达到条件后立即停止，不为“可能还有更多”继续扩张上下文。
+
+1. 提取查询中的精确键（concept 路径、文件名、Case ID、符号或接口名）、主题词、预期 `type`、适用范围和“当前/目标/历史”时间语义。先读仓库指令与根 `index.md`，按目录描述进入一个或少量相关分支。
+2. 有精确键或索引路由不够明确时定位少量候选。已启用本地全文索引，或用户要求本地快速检索/文档监听时，读取[本地全文检索](references/local-retrieval.md)。其他情况使用 `context_kg_search.py`：先匹配路径与元数据，元数据零候选且有 `--scope` 时才回退该分支正文，全库正文须显式 `--body`。
+3. 候选相关性按精确 ID/路径或 Case ID、标题、索引描述与 `description/tags/type`、正文命中、直接关系依次降低；可信度另按当前适用范围、`status`、`verified`、`stale_after` 和原始来源判断。关键词分高不能让 `draft`、过期或历史内容冒充当前结论，文件更新时间也不是权威性证据。
+4. 只打开最高置信的少量 concept。仅当它们不能完整回答时，沿标准 Markdown 链接或 `sources[].resource` 继续一层；每扩一层重新检查停止条件。索引缺失时只列当前层直属项并读取其 frontmatter 合成临时导航，不递归预读子树正文。
+5. 对易漂移事实、`draft`、已过 `stale_after`、来源不足或相互冲突的内容，转向代码、配置、测试或原始来源核验，并在回答中说明知识库状态。零候选时先扩大到全库元数据检索，最后才做限定范围的正文搜索。
+
+历史内容的默认隔离，以及 `--status deprecated`、`--history` 的组合语义，只在[本地全文检索](references/local-retrieval.md#历史内容隔离语义)定义一次；本页与其他文档引用该节，不重复规则。
+
+不要把 `log.md`、整个目录、全部反向链接或 Session Summary 作为普通领域查询的默认上下文。诊断检索质量时，优先报告展开的索引层数、候选数和读取正文数，而不是只报告易波动的耗时。
 
 ## 默认目录
 
@@ -30,148 +45,35 @@ description: 维护符合 Open Knowledge Format（OKF）的仓库内 context-kg 
 
 长期技术知识写入 `technical/` 下对应角色：ADR 记录重要技术选择及取舍；架构说明、详细合同、持续规范、调研和运维分别归入 `architecture/`、`contracts/`、`standards/`、`research/`、`operations/`。按实际内容建立目录；项目已有有效分类时沿用，避免为形式统一迁移稳定 ID。业务页链接技术权威 concept。
 
-## 一等工程知识
+测试用例、测试用例编码规范和代码设计规范是一等 concept，须各自有唯一权威入口，不能只作为其他页面或源码注释的附属段落；位置、必填字段与核对要求见[一等工程知识](references/okf-contract.md#一等工程知识)。
 
-测试用例、测试用例编码规范和代码设计规范是独立的一等 concept，不能只作为缺陷复盘、测试策略、ADR、任务记录或源码注释的附属段落。仓库 schema 未指定位置时使用以下入口；“独立”指每个适用范围有唯一权威 concept，而不是把所有模块和场景堆进一个巨型文件：
+## 破坏性治理硬门
 
-- **测试用例**：`quality/test-cases/` 下使用 `type: Test Case`。一个可独立演进的场景或紧密相关的参数组对应一个 concept，至少写明目标或需求链接、适用范围、前置条件、输入或步骤、预期结果、边界变体、覆盖状态及证据。Test Case 表达“要验证什么”；自动化测试表达“如何执行验证”，存在时链接测试文件或测试标识，不复制测试实现。没有自动化的稳定 case 明确标为 manual、planned 或 uncovered；自动化映射或测试代码变更本身也不等于验证通过，只有成功执行证据才能写入 `verified`。
-- **测试用例编码规范**：默认权威入口为 `quality/standards/test-case.md`，使用 `type: Test Case Standard`。按产品域、测试层级或模块需要拆分时，用 `quality/standards/` 索引多个独立 concept。写明适用范围、case ID 编码、命名、粒度、必填字段、优先级、标签、自动化映射、例外条件、可执行检查和权威来源；它约束“测试 case 如何表达和管理”，不替代测试策略或具体 case。自动化测试代码约定只有在确有独立生命周期时才另建 `type: Test Code Standard`。
-- **代码设计规范**：默认权威入口为 `technical/standards/code-design.md`，使用 `type: Code Design Standard`。按语言、架构层或模块拆分时维护目录索引。写明适用范围、设计约束及强度、理由、例外机制、验证方式和权威来源；ADR 记录一次决策及取舍，设计规范表达持续生效的工程约束，两者用标准 Markdown 链接关联。
+批次含 `delete`、`archive` 或 `move` 时，`apply` 前必须输出「路径 + 动作 + 理由 + 后继或承接目标」清单并获得用户确认；纯 `keep`/`update` 批次不要求。先运行 `apply --dry-run` 查看 diff 与动作计数，需要断言批次规模时用 `--expect-actions N`。journal 与回滚语义不变。规则与命令见[破坏性动作的人工确认硬门](references/knowledge-governance.md#破坏性动作的人工确认硬门)。
 
-这三类知识都执行“生命周期对账”。产品规则变化时同步核对 Test Case 与自动化测试；测试用例编码规范变化时核对 case、索引和相关管理工具；代码设计规范变化时核对受约束实现、架构测试和关联 ADR。现有 case、代码或测试偏离已批准规范时，把偏离记录为缺陷、技术债或待迁移项，不把偏离事实静默改写成新规范。规范允许的例外必须限定适用范围、依据和期限，并链接权威规范。完全失效且无回归、审计、迁移或兼容价值的旧 case 和旧规范按生命周期规则删除。
+## 职责边界
 
-## 快速渐进式检索
+- `context-kg/` 的内部结构、保留文件（`index.md`、`log.md`、`tasks/todo.md`、`tasks/lessons.md`、`_meta/schema.md`）与页面格式归本 Skill。
+- 任务计划与经验的记录时机、条目的触发与验证要求，以及代码实现、质量门禁、提交/推送边界归 `personal-development`。两处只保留各自职责的一份规定，互相引用而不重复维护格式正文。
 
-检索的完成条件是问题的各个子意图已有足够、相互一致且时效可信的证据；达到条件后立即停止，不为“可能还有更多”继续扩张上下文。
+## 按需读取
 
-1. 提取查询中的精确键（concept 路径、文件名、Case ID、符号或接口名）、主题词、预期 `type`、适用范围和“当前/目标/历史”时间语义。先读仓库指令与根 `index.md`，按目录描述进入一个或少量相关分支。
-2. 有精确键或索引路由不够明确时，定位少量候选。已启用本地全文索引，或用户要求本地快速检索/文档监听时，读取[本地全文检索](references/local-retrieval.md)，由当前 Agent 生成少量关键词并调用 `context_kg_qmd.py`；脚本负责同步、全文召回、过滤和输出预算。其他情况使用 `context_kg_search.py`：先匹配路径与元数据，元数据零候选且有 `--scope` 时才回退该分支正文，全库正文须显式 `--body`。普通查询默认排除 `deprecated`、任意层级的 `archive/` 和 Session Summary，历史查询显式使用 `--history`。
-3. 候选相关性按精确 ID/路径或 Case ID、标题、索引描述与 `description/tags/type`、正文命中、直接关系依次降低；可信度另按当前适用范围、`status`、`verified`、`stale_after` 和原始来源判断。关键词分高不能让 `draft`、过期或历史内容冒充当前结论，文件更新时间也不是权威性证据。
-4. 只打开最高置信的少量 concept。仅当它们不能完整回答时，沿标准 Markdown 链接或 `sources[].resource` 继续一层；每扩一层重新检查停止条件。索引缺失时只列当前层直属项并读取其 frontmatter 合成临时导航，不递归预读子树正文。
-5. 对易漂移事实、`draft`、已过 `stale_after`、来源不足或相互冲突的内容，转向代码、配置、测试或原始来源核验，并在回答中说明知识库状态。零候选时先扩大到全库元数据检索，最后才做限定范围的正文搜索。
-
-不要把 `log.md`、整个目录、全部反向链接或 Session Summary 作为普通领域查询的默认上下文。诊断检索质量时，优先报告展开的索引层数、候选数和读取正文数，而不是只报告易波动的耗时。
-
-## 增量维护
-
-`index.md` 是持久权威导航，不是可丢弃的生成缓存。索引描述和 concept 的 `title`、`description`、`tags`、`type`、适用范围应短小且有区分度，包含真实领域词、缩写或 ID，不堆砌无关关键词。
-
-1. 从用户任务、变更文件、符号、接口、业务规则、Case ID 和现有链接确定影响锚点；先定位目标 concept、直接关系和直接父索引。
-2. 新增或普通更新默认只修改受影响的 concept、直接关系、父 `index.md` 和适用的局部 `log.md`。只有新增、删除、移动、重命名或发现元数据实质变化时才更新父索引；普通正文、证据或 `verified` 变化不机械重写索引。
-3. 仅当父目录的导航摘要也发生变化时向祖先索引传播。删除、移动、合并、生命周期替换、taxonomy/schema 变化或用户要求全库审计时，才扩大到全库入链、`sources[].resource`、旧路径和旧结论扫描。
-4. 更新后用新旧术语和路径复查候选结果，确认新知识能被命中、旧结论不再被排为当前答案，且没有无关分支 diff。
-
-分层 `index.md` 与 concept 原文是权威来源。本地全文索引按[本地全文检索](references/local-retrieval.md)维护：缓存位于 Git 仓库外、可重建，文档更新与监听均无模型调用。维护完成后主动 `sync`；查询前仍执行文件对账，读取证据时核验源文件 hash。当前 Agent 承担语言理解；便宜子模型只在宿主已有配置且确有收益时选用，不成为技能必需依赖。
-
-## OKF 页面契约
-
-除任意层级的保留文件 `index.md` 和 `log.md` 外，每个 `.md` 都是 concept，必须是 UTF-8 Markdown，并以可解析的 YAML frontmatter 开头。`type` 是唯一始终必填字段：
-
-```yaml
----
-type: Architecture Decision
-title: 缓存层选型
-description: 说明缓存边界、失效策略与选型结果。
-tags: [architecture, cache]
-status: stable
-generated: { by: human:team, at: 2026-08-22T10:00:00+08:00 }
-sources:
-  - id: cache-config
-    resource: /references/cache-config.yaml
-    title: 缓存配置
----
-```
-
-约束：
-
-- `type` 使用简短、自解释的类型；消费者必须容忍未知类型。
-- 推荐填写 `title`、单句 `description` 和 `tags`。文件名用小写连字符；concept ID 是去掉 `.md` 的 bundle 相对路径，因此不同目录可以有同名文件。
-- `sources` 如出现，必须是来源对象列表；每项必须有 `resource`。不要用数字计数代替来源列表；无来源时省略该字段。
-- `generated.at`、`verified[].at`、`stale_after` 使用带 UTC offset 的 ISO 8601 datetime。`generated` 如出现必须包含 `by`；`verified` 的每项包含 `by` 和 `at`。
-- `status` 只使用 `draft`、`stable`、`deprecated`；缺失等同 `stable`。`deprecated` 只用于仍有审计、迁移或兼容价值而被有意保留的历史 concept，不替代删除无价值的废弃内容。
-- `type: Attested Computation` 时，`runtime` 条件必填；`parameters`、`computation`、`executor` 和 `attester` 按 OKF §10 的 contract 表达。
-- 可以保留项目自定义 frontmatter 字段；读写往返时保留未知字段。
-- 正文没有强制章节。用结构化 Markdown 表达事实，不复制大段源码。
-
-## 链接、索引与日志
-
-Concept 间关系使用标准 Markdown 链接：优先使用 bundle-root 相对链接，如 `[缓存层](/technical/cache-layer.md)`；也可使用普通相对路径。WikiLink 和自定义 `links` 字段可以作为仓库扩展保留，但不能替代 OKF 标准链接。
-
-`index.md` 用于渐进式发现：
-
-```markdown
-# Technical
-
-* [缓存层](cache-layer.md) - 缓存边界、失效策略与运维约束。
-* [架构决策](adr/) - 已确认的长期技术决策。
-```
-
-- 任意目录均可有 `index.md`；索引列出直属 concept 和子目录，并带单句描述。
-- 非根 `index.md` 不含 frontmatter。根 `index.md` 仅可用 frontmatter 声明 `okf_version: "0.2"`。
-- 新增、删除、移动、重命名或实质调整描述时，更新受影响层级的索引。
-
-`log.md` 是可选的目录变更记录。本技能的生产者约定是不写 frontmatter；以 `## YYYY-MM-DD` 分组，最新日期在前。维护既有条目，不改写历史。
-
-## 生命周期对账
-
-每次实质写入和重组都对目标 concept、索引中同主题的 concept 及其直接关系做生命周期对账。完成条件是同一适用范围和生效时段只有一个当前结论；证据不足时则只有一个明确的未决状态，不把任何候选表述为当前事实。旧内容已按其剩余价值处理，活动导航不再暴露互相矛盾的当前方案。
-
-1. **界定冲突**：比较内容描述的对象、适用范围、生效时段和知识角色。只有同一范围、同一时段下不能同时为真的结论才是冲突；当前实现、已批准但尚未生效的目标方案和历史决策可以并存，但必须明确角色和时间边界。
-2. **确定权威结论**：回到原始证据核验生效状态，不以文件更新时间单独裁决。代码、配置、迁移和通过的测试证明当前行为；已批准的决策记录证明目标或规范性结论。不要用未来方案覆盖尚未改变的当前事实，也不要让旧实现否定已经明确标注为目标状态的决策。证据仍无法消解时，把互斥主张、各自来源、provenance 和待验证项完整迁入一个 `draft` concept 或同一开放问题，再按剩余价值清理重复的主张页面；任何候选都不作为当前结论。代码、测试、配置、批准记录等原始材料必须保留并继续可追溯。
-3. **选择处置动作**：
-   - 内容互补或重复时，先把仍有效的独有内容合并进一个权威 concept，再删除重复段落或页面。
-   - 新方案已经生效并取代旧方案时，重写权威 concept 只表达当前结论，移除已失效的描述、示例和约束。
-   - 旧页面已被完全取代、有效独有内容已迁移，且不再承担审计、迁移或兼容价值时，删除文件，不保留空壳或仅含“已废弃”的墓碑页。
-   - 旧 concept 仍有解释、审计、迁移或兼容价值时才保留，标记 `status: deprecated`；保留必要的历史背景、取舍和结果，在正文开头标明生效区间并用标准 Markdown 链接指向替代方案，索引描述不得把它表述为当前方案。
-4. **清理引用面**：删除、合并、移动或替换后，扫描 `context-kg/` 中所有入链和 `sources[].resource`，更新引用方、相关层级 `index.md` 和适用的 `log.md`；再搜索旧路径和旧结论，确认它们不再被表达为当前事实。日志记录处置结果和替代目标，但不复制被删除的全文。
-
-不得仅在旧页面顶部追加“已废弃”而保留会误导当前判断的正文。删除范围应由证据支持；无法确认是否仍有消费者、迁移约束或审计价值时，先隔离并标记待决，而不是猜测性删除。
-
-## 写入流程
-
-1. 定位仓库根目录，读取 `AGENTS.md`；写入时再读取 `_meta/schema.md`、目标分支索引和相关 concept。若任务规则要求，在 `tasks/todo.md` 记录计划。
-2. 明确证据：代码、测试、配置、迁移、规范、讨论结论或外部来源。代码反向生成时先从入口、公开 API、模块边界、配置、schema 和测试建立能力图；同时识别可复用 Test Case、测试用例编码规范和代码设计规范，分别写入其权威 concept。
-3. 按业务、技术、质量或任务过程分类，并对命中的既有 concept 执行“生命周期对账”。优先更新已有 concept，避免近义重复；设计决策写入 ADR。
-4. 写持久知识而非任务流水账。区分代码证明的当前行为、测试覆盖的行为、已批准的目标方案和未经证实的产品意图；不确定内容标为开放问题或省略。
-5. 同步标准 Markdown 链接、`sources[].resource`、相关目录 `index.md` 和适用的 `log.md`。为每个 concept 填写真实 provenance；不要复制大段代码。
-6. 运行结构校验和仓库级检查。所有修改或删除的 concept 及其入链、索引、来源和日志均已核对后才算完成。
-
-## 会话结束摘要
-
-### 交付时的 KG 使用小结
-
-采用本 Skill 的会话，在完成实质任务的最终交付或用户明确要求收尾时，附上简短的 **KG 使用小结**；普通中间问答不重复输出。默认用以下四项，合并无内容项，控制在 3–5 行：
-
-- **检索**：本次使用的索引导航、无状态搜索或 QMD，以及检索范围；展开索引层数、候选数、读取正文数仅在有实际记录时报告，未记录就写“未统计”。
-- **采用**：列出实际影响本次结论或实现的少量 concept 链接及用途；只发现候选、未读原文或未用于决策时如实说明，不当作已采用知识。
-- **更新**：列出新增、修改、删除的知识入口及校验结果；启用本地全文索引时同时说明同步成功、失败或未执行。无知识变更时写“无更新”。
-- **待核验**：说明影响结论的过期、draft、冲突、无答案或来源缺口；没有则写“无”。
-
-本次既未检索、采用，也未维护 KG 时，一句话说明“本次未使用 KG；知识更新：无”即可；若仅维护了 KG，则说明维护内容。以本次会话实际工具与文件证据为准，不混入前次会话数据，不为填充小结额外查询，不把候选命中称为回答正确，也不估算未测量的耗时、token 节省或命中率。该小结默认由当前 Agent 展示给用户，不为每次交付另建文档。
-
-### 按需保存的 Session Summary
-
-在有实质决定、知识变更、验证结果、未决事项，或用户明确要求时，于本次交付前执行最后一次知识收敛。已有任务页的 Review 足以承载时直接更新该 Review；需要跨会话连续性导航时，才在 `context-kg/tasks/session-summaries/YYYY/MM/YYYY-MM-DD-<topic>.md` 创建 `type: Session Summary`，并维护年、月分层索引。各级摘要索引按最新月份或日期在前；恢复上次工作时先读该索引或运行搜索脚本的 `--latest-session`。
-
-1. 先把长期事实、决定、规范、Test Case 和缺陷知识更新到各自唯一权威 concept；Summary 只链接这些页面，不复制权威正文。
-2. Summary 只保留会话目标与范围、已确认决定及理由、创建/更新/删除的知识入口、验证及结果、未决项与风险、下一步和恢复检索入口。记录 `title`、单句 `description`、`generated`，并用 `as_of` 或正文明确这是时间点快照。
-3. 普通领域查询排除 Session Summary；仅在恢复上次工作、查询会话历史或变更脉络时读取。被链接的当前 concept 和原始证据始终优先于 Summary。
-4. 未决项关闭且内容已由权威 concept、任务 Review、Issue 或提交承接后，删除没有独立审计或连续性价值的 Summary，并同步月索引；最后一篇删除后同时清理空月、空年索引和上级入口。保留时明确其历史角色和适用时间，设置与任务周期相称的 `stale_after`。
-
-不要复制聊天全文、长日志、源码、敏感信息或未经确认的猜测。仅用于短期接管、包含工作树状态或临时命令的交接写入仓库规则指定的 `.handoff/`，保持本地且不提交；正式知识和 Summary 不把 `.handoff/` 作为来源。
-
-## 重组与 Lessons
-
-重组前写出目标 taxonomy，并先完成生命周期对账。尽量保留相对路径；路径变化或页面删除时更新所有入链、索引与来源路径，并在对应 `log.md` 顶部记录变更。重组后的活动知识中，同一适用范围和生效时段只保留一个当前结论；已批准但尚未生效的目标方案可以保留，但必须明确目标角色与生效条件。具有长期价值的历史决策也可以保留，但必须与当前事实清晰分离。
-
-用户纠正了可复用的代理行为时，按仓库规则把简短、行动导向的规则写入 `context-kg/tasks/lessons.md`。
+| 场景 | 读取内容 |
+| --- | --- |
+| 页面字段、`index.md`/`log.md` 格式、链接写法、`status`/`sources`/`verified`/`stale_after` | [OKF 页面契约](references/okf-contract.md) |
+| 生命周期对账、写入流程、重组与 lessons | [生命周期对账、写入与重组](references/lifecycle-and-write.md) |
+| KG 使用小结、Session Summary 保存与清理 | [会话结束摘要契约](references/session-summary.md) |
+| 全库分类、命名诊断、有效性判读、历史归档、rebuild 验收、恢复 | [全库治理](references/knowledge-governance.md) |
+| 本地全文索引、文档监听、隔离语义与故障恢复 | [本地全文检索](references/local-retrieval.md) |
 
 ## 校验
 
-运行随附脚本：
-
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_lint.py ./context-kg
+python3 "$SKILL_DIR/scripts/context_kg_lint.py" ./context-kg
 ```
+
+`SKILL_DIR` 是 Skill 的实际安装目录；Codex 全局安装时为 `~/.codex/skills/knowledge-maintainer`（此处仅作说明，可复制命令一律使用 `$SKILL_DIR`）。
+
+退出码：`0` 通过；`1` 内容不合规；`2` 无法执行（例如 bundle 路径不存在）；`3` 缺少 PyYAML——此时未做任何 frontmatter 判定，先安装依赖再重跑，不要把它当成格式错误。
 
 脚本检查 OKF v0.2 的 concept frontmatter、必填 `type`、可选字段结构、保留文件格式、索引链接和日志日期顺序。缺少可选索引或存在断链会报告警告，不会被误判为 OKF 不合规。随后运行与改动相关的仓库检查，例如 `git diff --check`。

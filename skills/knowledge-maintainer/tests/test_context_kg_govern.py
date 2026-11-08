@@ -186,6 +186,48 @@ class GovernanceTest(unittest.TestCase):
         with self.assertRaisesRegex(govern.GovernanceError, "index/log"):
             govern.check_plan(self.root, self.plan_file)
 
+    def snapshot(self) -> dict[str, bytes]:
+        return {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in sorted(self.root.rglob("*")) if path.is_file()}
+
+    def test_dry_run_reports_diff_and_counts_without_writing(self) -> None:
+        self.plan([self.move()])
+        before = self.snapshot()
+        report = govern.apply_plan(self.root, self.plan_file, self.state, dry_run=True)
+        self.assertEqual("dry-run", report["status"], report)
+        self.assertTrue(report["dry_run"])
+        self.assertEqual({"move": 1}, report["action_counts"])
+        self.assertIn("--- a/technical/reader.md", report["diff"])
+        self.assertIsNone(report["journal"])
+        self.assertEqual(before, self.snapshot())
+        self.assertFalse(self.state.exists(), "dry-run 不得创建治理状态目录")
+        applied = govern.apply_plan(self.root, self.plan_file, self.state)
+        self.assertEqual("applied", applied["status"])
+        self.assertIn("technical/b/x.md", self.snapshot())
+
+    def test_expect_actions_guards_batch_size_in_both_modes(self) -> None:
+        self.plan([self.move()])
+        before = self.snapshot()
+        with self.assertRaisesRegex(govern.GovernanceError, "expect-actions"):
+            govern.apply_plan(self.root, self.plan_file, self.state, dry_run=True,
+                              expect_actions=2)
+        with self.assertRaisesRegex(govern.GovernanceError, "expect-actions"):
+            govern.apply_plan(self.root, self.plan_file, self.state, expect_actions=5)
+        self.assertEqual(before, self.snapshot())
+        report = govern.apply_plan(self.root, self.plan_file, self.state, dry_run=True,
+                                   expect_actions=1)
+        self.assertEqual({"move": 1}, report["action_counts"])
+
+    def test_dry_run_surfaces_blockers_without_writing(self) -> None:
+        action = {"op": "update", "path": "technical/a/x.md", "reason": "更新正文",
+                  "evidence": self.evidence(), "body": "# X\n\n[新坏链](missing.md)\n"}
+        self.plan([action])
+        before = self.snapshot()
+        report = govern.apply_plan(self.root, self.plan_file, self.state, dry_run=True)
+        self.assertEqual("blocked", report["status"], report)
+        self.assertTrue(report["blockers"])
+        self.assertEqual(before, self.snapshot())
+
     def test_delete_live_reference_rejected_but_preexisting_bad_link_tolerated(self) -> None:
         action = {"op": "delete", "path": "technical/a/x.md", "reason": "内容已移交",
                   "evidence": self.evidence(),

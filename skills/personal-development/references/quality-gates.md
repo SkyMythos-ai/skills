@@ -28,6 +28,8 @@
 - 检查范围明确到 module/workspace、target、features/build tags、测试及生成代码策略；多模块逐一覆盖，不把从根目录执行一次当作全仓已覆盖。
 - 每次新接入或改变门禁，使用已知违规样例证明会阻断，再修复样例证明会通过；不要只看成功日志。行为链为 `违规输入 → 检查非零 → CI 失败 → 合并受阻`，各层分别留证。
 
+本文的示例标记分两类：`gate-example: shell-bad` / `shell-good` 由 `tests/test_gate_examples.py` 真实执行（用桩 linter 验证退出码传播）；`gate-fragment:` 标记的配置与插件片段只供人工核对字段与位置，不参与自动校验，不当作已生效门禁。
+
 ### Q1：错误不能被日志管道吞掉
 
 场景：已安装项目固定版本的 golangci-lint，以下片段由 Bash 执行，工作目录与配置正确。
@@ -48,13 +50,13 @@ set -euo pipefail
 golangci-lint run ./... 2>&1 | tee lint.log
 ```
 
-执行合同：`linter exit 1 + tee exit 0 → Bad exit 0 / Good exit 1`；`两者 exit 0 → Good exit 0`；日志写入失败也必须失败。若不用管道，可直接执行检查命令；本例只证明 shell 退出码传播，不证明 CI 或远端规则已生效。
+执行合同：`linter exit 1 + tee exit 0 → Bad exit 0 / Good exit 1`；`两者 exit 0 → Good exit 0`；日志写入失败也必须失败。若不用管道，可直接执行检查命令；本例只证明 shell 退出码传播，不证明 CI 或远端规则已生效。上述三种情形由 `tests/test_gate_examples.py` 实际执行两个片段验证，修改片段时同步跑该测试。
 
 ## Go
 
-默认组合：`gofmt` + `golangci-lint` + 编译/测试；并发代码补适用范围的 race。优先保留现有工具链，无配置时以下是 **golangci-lint v2 的最小起点**，不是要求覆盖已有规则集。
+默认组合：`gofmt` + `golangci-lint` + 编译/测试；并发代码补适用范围的 race。优先保留现有工具链，无配置时以下是 **golangci-lint v2 的最小起点**，不是要求覆盖已有规则集。该片段是需要人工核对的配置示例，不参与自动校验。
 
-<!-- gate-example: golangci-config -->
+<!-- gate-fragment: golangci-config -->
 ```yaml
 version: "2"
 run:
@@ -124,9 +126,9 @@ cargo test --workspace
 </reporting>
 ```
 
-**Good**：在 `<build><plugins>` 中绑定 `check`。以下是 POM 插件片段，`${spotbugs.version}` 必须在项目属性中固定为与 JDK 兼容的确切版本，不是可直接运行的完整 POM。
+**Good**：在 `<build><plugins>` 中绑定 `check`。以下是 POM 插件片段，`${spotbugs.version}` 必须在项目属性中固定为与 JDK 兼容的确切版本，不是可直接运行的完整 POM；片段不参与自动校验。
 
-<!-- gate-example: spotbugs-plugin -->
+<!-- gate-fragment: spotbugs-plugin -->
 ```xml
 <plugin>
   <groupId>com.github.spotbugs</groupId>

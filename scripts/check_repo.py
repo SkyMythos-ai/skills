@@ -6,8 +6,9 @@
 1. `skills/<name>/SKILL.md` 的 frontmatter 可解析，`name` 与目录名一致，并含 `description`。
 2. 全仓库 Markdown 相对链接可解析；bundle 根链接（`/xxx`）按 `context-kg/` 解析。
 3. `example:` 标记必须成对（`<id>-bad` / `<id>-good`）且 ID 全仓库唯一。
-4. `gate-example:` 标记 ID 唯一；成对写法的 `-bad`/`-good` 必须配对。片段类标记
-   只要求唯一，并在汇总里单独计数，不当成已校验的断言。
+4. `gate-example:` 只能是可执行断言（`shell-bad` / `shell-good`）并按文件成对；
+   不参与机器校验的片段必须标 `gate-fragment:`，且类别在已声明集合内。
+5. 可复制的围栏代码块不得写死宿主安装路径（`~/.codex/`），改用 `$SKILL_DIR` 占位。
 
 围栏代码块与行内代码中的链接/标记不作为真实结构扫描，避免把示例本身当成链接。
 
@@ -33,6 +34,11 @@ EXPLICIT_ANCHOR = re.compile(r"<a\s+id=\"([^\"]+)\"")
 EXTERNAL_SCHEME = ("http://", "https://", "mailto:", "tel:", "ftp://")
 
 EXAMPLE_KINDS = {"bad", "good"}
+# gate-example 只能用于可以真实执行的断言；其余片段必须标 gate-fragment。
+EXECUTABLE_GATE_KINDS = {"shell-bad", "shell-good"}
+GATE_FRAGMENT_KINDS = {"golangci-config", "spotbugs-plugin"}
+# 可复制命令不得写死宿主目录；路径约定与对照说明写在正文里。
+HARDCODED_HOST_PATH = "~/.codex/"
 
 
 def split_fences(text: str) -> tuple[str, list[str]]:
@@ -211,8 +217,13 @@ def check_markers(files: list[Path], errors: list[str]) -> tuple[int, int, int]:
                 continue
             gate_ids[identifier] = document
             base, _, kind = identifier.rpartition("-")
-            if kind in EXAMPLE_KINDS and base:
-                gate_pairs.setdefault((document, base), set()).add(kind)
+            if identifier not in EXECUTABLE_GATE_KINDS or not base:
+                errors.append(
+                    f"{document}: gate-example 只接受可执行断言 "
+                    f"{sorted(EXECUTABLE_GATE_KINDS)}；片段类请改用 gate-fragment：{identifier}"
+                )
+                continue
+            gate_pairs.setdefault((document, base), set()).add(kind)
         for marker in GATE_FRAGMENT.finditer(prose):
             identifier = marker.group(1)
             if identifier in fragments:
@@ -222,14 +233,33 @@ def check_markers(files: list[Path], errors: list[str]) -> tuple[int, int, int]:
                 )
                 continue
             fragments[identifier] = document
+            if identifier not in GATE_FRAGMENT_KINDS:
+                errors.append(
+                    f"{document}: 未声明的 gate-fragment 类别：{identifier}；"
+                    f"已知类别 {sorted(GATE_FRAGMENT_KINDS)}"
+                )
     for (document, base), kinds in sorted(pairs.items()):
         if kinds != EXAMPLE_KINDS:
             errors.append(f"{document}: {base} 的 bad/good 未配对：{sorted(kinds)}")
     for (document, base), kinds in sorted(gate_pairs.items()):
         if kinds != EXAMPLE_KINDS:
             errors.append(f"{document}: {base} 的 gate-example 未配对：{sorted(kinds)}")
-    loose = len(gate_ids) - sum(len(kinds) for kinds in gate_pairs.values())
-    return len(seen), len(gate_pairs), loose + len(fragments)
+    return len(seen), len(gate_pairs), len(gate_ids) - sum(len(v) for v in gate_pairs.values()) + len(fragments)
+
+
+def check_copyable_paths(files: list[Path], errors: list[str]) -> int:
+    """围栏代码块是可复制命令，不得出现固定宿主安装路径。"""
+    checked = 0
+    for document in files:
+        _, blocks = split_fences(document.read_text(encoding="utf-8"))
+        for block in blocks:
+            checked += 1
+            if HARDCODED_HOST_PATH in block:
+                errors.append(
+                    f"{document}: 可复制代码块包含固定宿主路径 {HARDCODED_HOST_PATH}；"
+                    "改用 $SKILL_DIR 占位，并在正文给出宿主对照"
+                )
+    return checked
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -242,10 +272,11 @@ def main(argv: list[str] | None = None) -> int:
     check_skills(root, errors)
     links = check_links(root, files, errors)
     examples, gate_groups, gate_fragments = check_markers(files, errors)
+    blocks = check_copyable_paths(files, errors)
     print(
         f"检查 Markdown：{len(files)} 份；相对链接 {links} 条；"
         f"example {examples} 个；gate 可执行对 {gate_groups} 组；"
-        f"gate 片段/单标记 {gate_fragments} 个"
+        f"gate 片段 {gate_fragments} 个；代码块 {blocks} 个"
     )
     for message in errors:
         print(f"✗ {message}")

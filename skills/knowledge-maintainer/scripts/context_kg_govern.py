@@ -558,6 +558,23 @@ def _action_tree(root: Path, plan: dict[str, Any], inventory: dict[str, Any],
     return tree, mapping, diagnostics
 
 
+def _action_counts(plan: dict[str, Any]) -> dict[str, int]:
+    """按 op 统计动作数；dry-run 与 --expect-actions 共用。"""
+    counts: Counter[str] = Counter()
+    for action in plan.get("actions", []):
+        counts[str(action.get("op") or "unknown")] += 1
+    return dict(sorted(counts.items()))
+
+
+def _check_action_count(plan: dict[str, Any], expect_actions: int | None) -> None:
+    """断言批次规模，避免计划被替换后静默扩大范围。"""
+    if expect_actions is None:
+        return
+    actual = len(plan.get("actions", []))
+    if actual != expect_actions:
+        raise GovernanceError(f"计划动作数为 {actual}，与 --expect-actions {expect_actions} 不符")
+
+
 def _diff(before: dict[str, bytes], after: dict[str, bytes]) -> str:
     chunks = []
     for rel in sorted(set(before) | set(after)):
@@ -827,9 +844,29 @@ def recover(root: Path, state_dir: Path | None = None) -> dict[str, Any]:
         return _recover_locked(root, state)
 
 
-def apply_plan(root: Path, plan_file: Path, state_dir: Path | None = None) -> dict[str, Any]:
-    """先复验计划，再持久化完整 journal，逐文件原子替换；异常尝试安全回滚。"""
+def apply_plan(
+    root: Path,
+    plan_file: Path,
+    state_dir: Path | None = None,
+    *,
+    dry_run: bool = False,
+    expect_actions: int | None = None,
+) -> dict[str, Any]:
+    """先复验计划，再持久化完整 journal，逐文件原子替换；异常尝试安全回滚。
+
+    `dry_run` 只读：复用完整检查输出 diff 与动作计数，不建状态目录、不写 journal、
+    不改动 bundle。`expect_actions` 断言批次规模，不符则以 GovernanceError 失败。
+    """
     root = root.expanduser().resolve()
+    if dry_run:
+        plan = _load_plan(root, plan_file)
+        _check_action_count(plan, expect_actions)
+        report = _check_plan_details(root, plan_file)[0]
+        return {**report,
+                "status": "dry-run" if report["status"] == "ready" else report["status"],
+                "dry_run": True,
+                "action_counts": _action_counts(plan),
+                "journal": None}
     state = _state(root, state_dir)
     with _lock(state):
         journal_file = state / "journal.json"
@@ -838,6 +875,7 @@ def apply_plan(root: Path, plan_file: Path, state_dir: Path | None = None) -> di
             old = json.loads(journal_file.read_text(encoding="utf-8"))
             if old.get("state") not in {"recovered", "committed"}:
                 raise GovernanceError("已有待恢复事务；先 recover")
+        _check_action_count(_load_plan(root, plan_file), expect_actions)
         report, before, after = _check_plan_details(root, plan_file)
         if report["blockers"]:
             raise GovernanceError("计划存在阻断项：" + "; ".join(item["message"] for item in report["blockers"]))
@@ -901,6 +939,10 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--plan", type=Path, required=True)
         if name == "apply":
             command.add_argument("--state-dir", type=Path)
+            command.add_argument("--dry-run", action="store_true",
+                                 help="只输出 diff 与动作计数，不写文件")
+            command.add_argument("--expect-actions", type=int, metavar="N",
+                                 help="断言计划动作数；不一致则退出码 2")
     recovery = commands.add_parser("recover")
     recovery.add_argument("root", type=Path)
     recovery.add_argument("--state-dir", type=Path)
@@ -932,7 +974,11 @@ def main(argv: list[str] | None = None) -> int:
             print(_json(result), end="")
             return 2 if result["blockers"] else 0
         elif args.command == "apply":
-            print(_json(apply_plan(args.root, args.plan, args.state_dir)), end="")
+            result = apply_plan(args.root, args.plan, args.state_dir,
+                                dry_run=args.dry_run, expect_actions=args.expect_actions)
+            print(_json(result), end="")
+            if args.dry_run and result["blockers"]:
+                return 2
         elif args.command == "verify":
             result = verify_plan(args.root, args.plan)
             print(_json(result), end="")

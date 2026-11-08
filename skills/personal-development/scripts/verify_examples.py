@@ -86,6 +86,31 @@ def verify(language, code, kind, work, java_image, race):
                 run(execute_cmd, cwd=work, timeout=10)
 
 
+def collect_examples(document: Path, language: str, seen: set[str]) -> list[tuple[str, str]]:
+    """读取并校验一份文档的 example 标记，返回 [(identifier, code)]。
+
+    标记数与代码块不一致、ID 重复、语言不符、或 bad/good 未配对时抛出
+    ValueError；调用方不得据此继续编译。
+    """
+    content = document.read_text(encoding="utf-8")
+    examples = BLOCK.findall(content)
+    marker_count = content.count("<!-- example:")
+    if not examples or len(examples) != marker_count:
+        raise ValueError(f"{document}: 标记与代码块不匹配")
+    pairs = {}
+    for identifier, actual_language, _ in examples:
+        if identifier in seen or actual_language != language:
+            raise ValueError(f"重复 ID 或语言不符: {identifier}")
+        seen.add(identifier)
+        base, kind = identifier.rsplit("-", 1)
+        if kind not in {"bad", "good"}:
+            raise ValueError(f"未知案例类型: {identifier}")
+        pairs.setdefault(base, set()).add(kind)
+    if any(kinds != {"bad", "good"} for kinds in pairs.values()):
+        raise ValueError(f"{document}: bad/good 未配对")
+    return [(identifier, code) for identifier, _, code in examples]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--language", choices=["go", "rust", "java"], action="append")
@@ -98,29 +123,14 @@ def main():
     with tempfile.TemporaryDirectory(prefix="personal-coding-cases-") as directory:
         for language in dict.fromkeys(languages):
             document = ROOT / "references" / f"cases-{language}.md"
-            content = document.read_text(encoding="utf-8")
-            examples = BLOCK.findall(content)
-            marker_count = content.count("<!-- example:")
-            if not examples or len(examples) != marker_count:
-                raise ValueError(f"{document}: 标记与代码块不匹配")
-            pairs = {}
-            for identifier, actual_language, _ in examples:
-                if identifier in seen or actual_language != language:
-                    raise ValueError(f"重复 ID 或语言不符: {identifier}")
-                seen.add(identifier)
-                base, kind = identifier.rsplit("-", 1)
-                if kind not in {"bad", "good"}:
-                    raise ValueError(f"未知案例类型: {identifier}")
-                pairs.setdefault(base, set()).add(kind)
-            if any(kinds != {"bad", "good"} for kinds in pairs.values()):
-                raise ValueError(f"{document}: bad/good 未配对")
+            examples = collect_examples(document, language, seen)
             try:
                 check_toolchain(language, options.java_image)
             except (RuntimeError, OSError, subprocess.SubprocessError) as error:
                 skipped.append(language)
                 print(f"未验证 {language}: {error}", flush=True)
                 continue
-            for identifier, _, code in examples:
+            for identifier, code in examples:
                 work = Path(directory) / identifier
                 work.mkdir()
                 try:

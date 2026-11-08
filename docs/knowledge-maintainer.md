@@ -2,7 +2,24 @@
 
 `knowledge-maintainer` 用于把项目中的长期知识维护为符合 Open Knowledge Format（OKF）v0.2 的 `context-kg/` Knowledge Bundle。它既能从代码、配置和测试中提炼知识，也能按渐进式加载方式查询已有知识库。
 
+## 路径约定
+
+下文命令统一用 `$SKILL_DIR` 代表 Skill 的实际安装目录，先设置再复制运行：
+
+```bash
+# 按自己的安装位置填写，不要写死某个宿主的目录
+export SKILL_DIR=/path/to/knowledge-maintainer
+```
+
+- 仓库内形态：脚本在 `skills/knowledge-maintainer/scripts/`，可以从仓库根目录直接运行，例如 `python3 skills/knowledge-maintainer/scripts/context_kg_lint.py ./context-kg`。
+- 已安装形态：脚本在安装目录的 `scripts/` 下，命令统一写作 `python3 "$SKILL_DIR/scripts/<name>.py"`。
+- 本页不依赖固定宿主安装位置：换 Agent、换安装范围或直接把仓库当 Skill 用时，只改 `$SKILL_DIR`；`docs/personal-development.md` 采用同样写法。
+
+Codex 全局安装时，`SKILL_DIR` 取 `~/.codex/skills/knowledge-maintainer`（仅在说明中出现，可复制的命令一律使用 `$SKILL_DIR`）。
+
 ## 适用场景
+
+先判断不适用的情况：只改一行临时代码且没有可复用知识、仅记录短期聊天过程、只想创建普通用户文档而不维护 `context-kg/`、纯代码实现与重构、以及构建或镜像语境中的 `rebuild`。该范围与 [Skill 触发范围](../skills/knowledge-maintainer/SKILL.md) 的 `description` 一致，是否触发的判定以 SKILL.md 为准；本页只列使用场景。
 
 | 场景 | 什么时候使用 | 典型产物 |
 | --- | --- | --- |
@@ -15,7 +32,6 @@
 | 测试与工程规范 | 需要管理测试 case、测试用例编码规则或持续生效的设计约束 | 独立 Test Case、Test Case Standard、Code Design Standard |
 | 全库知识治理 | 分类混杂、命名含糊、需求变更、历史混入当前知识或重复页面 | 盘点与命名诊断、有效性证据、可检查计划、归档与恢复记录 |
 
-以下情况通常不需要使用：只改一行临时代码且没有可复用知识、仅记录短期聊天过程、或者只想创建普通用户文档而不维护 `context-kg/`。
 
 ## 安装
 
@@ -109,13 +125,13 @@ Skill 不会把提交记录原样复制进知识库，而会提炼稳定的职�
 
 读取路径是：根 `index.md` → 命中的目录 `index.md` → 带命中原因的少量候选 → 少量目标 concept → 必要的一跳链接或来源。任意层缺索引时，只会查看当前层直属项并临时合成导航，不会默认递归加载整个知识库。
 
-精确路径、Case ID、接口名或主题词可以使用随附搜索脚本定位。默认排除 deprecated、任意层级的 archive 目录和 Session Summary；历史查询使用 `--history`。元数据无候选时优先用 `--scope` 限定正文回退范围，确需全库正文搜索时才显式增加 `--body`。中文多词跨字段检索时用空格分隔主题词：
+精确路径、Case ID、接口名或主题词可以使用随附搜索脚本定位。状态与历史的默认隔离，以及 `--history`、`--status deprecated` 的组合语义，只在[本地全文检索](../skills/knowledge-maintainer/references/local-retrieval.md#历史内容隔离语义)定义一次，本页不复述。元数据无候选时优先用 `--scope` 限定正文回退范围，确需全库正文搜索时才显式增加 `--body`。中文多词跨字段检索时用空格分隔主题词：
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg "退款幂等" --limit 5
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg "TC-ORDER-042" --type "Test Case"
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg "订单 幂等" --scope business
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg "旧缓存方案" --history --body
+python3 "$SKILL_DIR/scripts/context_kg_search.py" ./context-kg "退款幂等" --limit 5
+python3 "$SKILL_DIR/scripts/context_kg_search.py" ./context-kg "TC-ORDER-042" --type "Test Case"
+python3 "$SKILL_DIR/scripts/context_kg_search.py" ./context-kg "订单 幂等" --scope business
+python3 "$SKILL_DIR/scripts/context_kg_search.py" ./context-kg "旧缓存方案" --history --body
 ```
 
 候选相关性和可信度分开判断：精确 ID、标题和元数据命中负责定位，`status`、`verified`、`stale_after` 和原始来源决定能否作为当前答案。满足问题全部子意图且没有未核验冲突后立即停止，不继续预读无关分支。
@@ -128,15 +144,15 @@ python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./cont
 
 ```bash
 npm install -g @tobilu/qmd@2.8.3
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg sync
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg search "支付 幂等" \
+python3 "$SKILL_DIR/scripts/context_kg_qmd.py" ./context-kg sync
+python3 "$SKILL_DIR/scripts/context_kg_qmd.py" ./context-kg search "支付 幂等" \
   --alternative "扣款 去重" --scope business --limit 5
 ```
 
 命令输出有长度预算的 JSON：候选包含路径、元数据、短片段、行号与源文件 `sha256`，默认最多 5 条、整个 JSON 不超过 12,000 字符。状态、类型和范围过滤在候选上限之前执行。获取候选后，使用其 hash 校验并读取原文；文件变化时重新搜索：
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg read business/payment.md \
+python3 "$SKILL_DIR/scripts/context_kg_qmd.py" ./context-kg read business/payment.md \
   --start-line 12 --lines 60 --expected-hash <candidate-sha256>
 ```
 
@@ -145,7 +161,7 @@ python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context
 每次查询前都会对账，因此不启动监听也能发现文件变化。持续编辑时可主动运行前台监听；启动对账、轮询去抖和定期 hash 检查都在本地完成：
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_qmd.py ./context-kg watch \
+python3 "$SKILL_DIR/scripts/context_kg_qmd.py" ./context-kg watch \
   --interval 1 --debounce 0.4 --reconcile-seconds 30
 ```
 
@@ -197,12 +213,12 @@ $knowledge-maintainer rebuild
 脚本提供盘点、计划、检查、应用、真实树验收和恢复；当前模型读取有限候选及原始证据，决定是否移动、更新、归档或删除。`stale_after` 到期只提示复核，`stable` 也不等于需求已生效或实现已通过验收。无需额外模型或 API 凭据。
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py audit ./context-kg --limit 20 --output /tmp/kg-audit.json
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py plan ./context-kg --rebuild --output /tmp/kg-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" audit ./context-kg --limit 20 --output /tmp/kg-audit.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" plan ./context-kg --rebuild --output /tmp/kg-plan.json
 # 由当前模型依据证据填写 actions、taxonomy、decisions 和 probes，再审阅 diff。
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py check ./context-kg --plan /tmp/kg-plan.json
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py apply ./context-kg --plan /tmp/kg-plan.json
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_govern.py verify ./context-kg --plan /tmp/kg-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" check ./context-kg --plan /tmp/kg-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp/kg-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" verify ./context-kg --plan /tmp/kg-plan.json
 ```
 
 rebuild 计划须填写目标目录规则、覆盖每页的角色/生命周期/处置及理由，以及真实当前与历史检索探针。逐目录记录角色、主题、直属页数与目标目录，混放的不同职责实际拆分或给出内容级保留依据。已归类的页面可以保留；扁平目录须按角色与主题实际改善导航，历史页须实际进入 archive 并退出活动候选。`verify` 的 `completion: complete` 且无阻断、无文档待判读才表示本轮完成；业务待验收项单独保留在当前任务入口。完整字段见下方全库治理流程。
@@ -238,7 +254,7 @@ KG 使用小结
 默认位置是 `context-kg/tasks/session-summaries/YYYY/MM/YYYY-MM-DD-<topic>.md`，类型为 `Session Summary`。它是时间点导航快照，不是长期事实的第二权威源；普通业务查询默认排除，只在恢复工作或追溯变更脉络时读取。年、月索引按最新在前排列；不知道主题时可以直接定位最近一次摘要：
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_search.py ./context-kg --latest-session
+python3 "$SKILL_DIR/scripts/context_kg_search.py" ./context-kg --latest-session
 ```
 
 如果任务页的 Review 已经完整，则直接更新 Review，不重复创建 Summary。未决项关闭且正式 concept、Review、Issue 或提交已经承接内容后，删除没有独立价值的 Summary 并清理月索引；空月、空年索引和上级入口一并清理。仅用于短期接管的工作树状态、临时命令和阻塞信息进入本地 `.handoff/`，不提交，也不作为正式知识来源。
@@ -279,7 +295,7 @@ context-kg/
 安装 Skill 后，在目标项目根目录运行：
 
 ```bash
-python3 ~/.codex/skills/knowledge-maintainer/scripts/context_kg_lint.py ./context-kg
+python3 "$SKILL_DIR/scripts/context_kg_lint.py" ./context-kg
 ```
 
 项目级安装时，将脚本路径替换为实际安装位置。lint 会把格式错误标为 `✗`，把 OKF 允许但会降低维护质量的情况标为 `⚠`，例如断链或推荐索引缺失。

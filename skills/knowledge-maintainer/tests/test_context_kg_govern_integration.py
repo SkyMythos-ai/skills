@@ -125,6 +125,32 @@ class GovernanceCliTest(unittest.TestCase):
         self.assertFalse((self.root / "business/payment.md").exists())
         self.assertEqual(private, (self.root / "tasks/private.md").read_bytes())
 
+    def test_apply_dry_run_and_expect_actions_over_cli(self) -> None:
+        self.action({"op": "archive", "path": "business/payment.md", "reason": "新规则已经生效，保留历史取舍。",
+                     "effective_period": "2025-01 至 2026-10 迁移完成", "replacement": "business/current.md",
+                     "evidence": self.evidence()})
+        before = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                  for path in self.root.rglob("*") if path.is_file()}
+        report = self.command("apply", "--plan", str(self.plan), "--state-dir", str(self.state),
+                              "--dry-run", "--expect-actions", "1")
+        self.assertEqual("dry-run", report["status"], report)
+        self.assertEqual({"archive": 1}, report["action_counts"])
+        self.assertIn("business/archive/payment.md", report["diff"])
+        self.assertIsNone(report["journal"])
+        after = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                 for path in self.root.rglob("*") if path.is_file()}
+        self.assertEqual(before, after, "--dry-run 不得改动 bundle")
+        self.assertFalse(self.state.exists(), "--dry-run 不得创建状态目录")
+        # 批次规模不符时以退出码 2 失败，且不写入任何文件。
+        self.command("apply", "--plan", str(self.plan), "--state-dir", str(self.state),
+                     "--expect-actions", "3", expected=2)
+        self.assertEqual(before, {path.relative_to(self.root).as_posix(): path.read_bytes()
+                                  for path in self.root.rglob("*") if path.is_file()})
+        self.assertTrue((self.root / "business/payment.md").exists())
+        self.command("apply", "--plan", str(self.plan), "--state-dir", str(self.state),
+                     "--expect-actions", "1")
+        self.assertTrue((self.root / "business/archive/payment.md").exists())
+
     def test_external_reference_blocks_until_callers_and_snapshot_are_updated(self) -> None:
         caller = self.project / "AGENTS.md"
         caller.write_text("业务规则见 context-kg/business/payment.md。\n", encoding="utf-8")

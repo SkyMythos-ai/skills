@@ -4,7 +4,7 @@
 
 ## rebuild 短指令
 
-用户发送 `$knowledge-maintainer rebuild`，即要求对当前项目 `context-kg/` 执行一次完整的存量治理。可在后面指定另一个 bundle 路径，如 `$knowledge-maintainer rebuild /project/context-kg`。目标只在范围无法从项目与会话确定时澄清。已明确处于本技能的知识库治理语境时，单独 `rebuild` 等价；编译、镜像或其他应用的 rebuild 沿用其原义。
+用户发送 `$knowledge-maintainer rebuild`，即要求对当前项目 `context-kg/` 执行一次完整的存量治理。可在后面指定另一个 bundle 路径，如 `$knowledge-maintainer rebuild /project/context-kg`。目标只在范围无法从项目与会话确定时澄清。只有前一轮已确认本技能的知识库治理意图时，才可以单独说 `rebuild`；编译、镜像、CI 或应用重启语境中的 rebuild 沿用其原义，不触发本技能。
 
 这是由当前 Agent 执行的 Skill 指令，底层使用 `plan --rebuild/check/apply/verify`。当前模型负责语义判断，脚本负责可检查验收；不依赖额外模型。全文索引的 `sync` 继续负责检索同步。
 
@@ -17,6 +17,18 @@
 5. 用 `verify` 检查应用后的真实树，再运行 lint；已启用 QMD 时同步并复验。交付记录覆盖数、角色分布、迁移与归档数、目录整理前后分布、当前与历史探针结果、恢复入口及待核验项。`completion: complete`、无阻断且无文档待判读才可报告 rebuild 完成；`needs-review/blocked` 须列明剩余项。已合理组织的全 `keep` 可以完成，但元数据更新数或空计划不能代替分类与历史隔离验收。
 
 指令范围为知识库整理，沿用已有提交、推送和部署边界。首次启用 Skill 不自行运行 rebuild；日常变更继续按增量维护处理。
+
+## 破坏性动作的人工确认硬门
+
+批次含 `delete`、`archive` 或 `move` 时，`apply` 前必须先向用户输出清单并取得确认；纯 `keep`/`update` 批次不要求。清单每项写四件事：路径（原路径 → 目标路径，`delete` 只写原路径）、动作、理由、后继或承接目标（无后继时写明为何不需要）。确认前不执行 `apply`；确认后又改了计划，重新出清单。
+
+```bash
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp/kg-plan.json --dry-run --expect-actions 7
+```
+
+- `--dry-run` 复用完整检查但只读：输出拟议 diff、按动作统计的计数与 changed/deleted 列表，不写文件、不建 journal、不动恢复状态。
+- `--expect-actions N` 断言计划实际动作数；不一致直接以退出码 2 失败，避免计划被替换后静默扩大范围。
+- 两步都不改变 journal、备份与回滚语义：真正的 `apply` 仍写 journal、逐文件原子替换，可用 `recover` 恢复。
 
 ## 分类与稳定 ID
 
@@ -76,6 +88,8 @@
 python3 "$SKILL_DIR/scripts/context_kg_govern.py" audit ./context-kg --limit 20 --output /tmp/kg-audit.json
 python3 "$SKILL_DIR/scripts/context_kg_govern.py" plan ./context-kg --output /tmp/kg-plan.json
 ```
+
+含 `delete`/`archive`/`move` 的批次按[破坏性动作的人工确认硬门](#破坏性动作的人工确认硬门)先出清单并确认，再 `check` 与应用。
 
 `audit` 盘点全部分支、保留文件、普通 concept 和附件，记录 hash、Git 跟踪/忽略边界、分类建议、命名诊断、过期及引用线索；不输出整库正文。`--limit` 约束终端显示，完整 JSON 保存在指定文件。`plan` 保存文件集合与 hash，actions 初始为空，不会按启发式自动执行重命名或归档。
 
@@ -154,6 +168,7 @@ python3 "$SKILL_DIR/scripts/context_kg_govern.py" verify ./context-kg --plan /tm
 
 ```bash
 python3 "$SKILL_DIR/scripts/context_kg_govern.py" check ./context-kg --plan /tmp/kg-plan.json
+python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp/kg-plan.json --dry-run
 python3 "$SKILL_DIR/scripts/context_kg_govern.py" apply ./context-kg --plan /tmp/kg-plan.json
 python3 "$SKILL_DIR/scripts/context_kg_lint.py" ./context-kg
 ```
