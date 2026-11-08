@@ -114,7 +114,7 @@ $knowledge-maintainer rebuild
 记录决定、知识变更、验证、未决项和下次检索入口。
 ```
 
-`rebuild` 必须是显式调用，或前一轮已确认本技能的知识库治理意图；其他语境中的同名命令与本技能无关。含删除、归档或移动的批次，`apply` 前会先给出清单等你确认。
+`rebuild` 的触发条件以 [Skill 触发范围](../skills/knowledge-maintainer/SKILL.md) 为准（显式调用，或前一轮已确认的知识库治理意图）；含删除、归档或移动的批次，`apply` 前会先给出清单等你确认。
 
 ## 预期目录
 
