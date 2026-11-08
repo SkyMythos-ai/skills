@@ -30,7 +30,7 @@ sources:
 
 后续讨论已扩展到整个知识包。跨 business、technical、quality、tasks 和 _meta 的分类、稳定命名及分角色生命周期规则见 [全库治理规范草案](/technical/standards/knowledge-bundle-governance.md)；该页仍为 draft，不是 Fusion 已生效规则。本文保留 ADR 专项的盘点事实和处置边界。
 
-本仓库已有的 [knowledge-maintainer Skill](../../../skills/knowledge-maintainer/SKILL.md) 规定生命周期对账、索引与入链修复，以及 `draft`、`stable`、`deprecated` 三个 OKF 状态。其 [本地检索合同](../../../skills/knowledge-maintainer/references/local-retrieval.md) 和 [QMD 决策](/technical/adr/local-fulltext-retrieval.md) 已覆盖无模型全文召回、变更 hash 对账、默认过滤 `deprecated`、显式 `--history` 和原文 hash 核验。已通过 CodeGraph 定位并核对 [QMD `_eligible`](../../../skills/knowledge-maintainer/scripts/context_kg_qmd.py) 第 356–376 行和 [无状态搜索](../../../skills/knowledge-maintainer/scripts/context_kg_search.py) 第 242–256 行：两者默认按 `deprecated` 状态过滤，**尚不按 `archive/` 路径过滤**；`archive/old.md` 若仍标 `stable`，普通搜索仍可能命中。**新缺口**是 ADR 专属的分类建议、决策批准和实现证据判读、跨页替代关系校验、可回滚的批量移动/归档计划，以及活动导航与历史导航的双重隔离；现有检索能力不能自行宣布 ADR 失效。
+本仓库已有的 [knowledge-maintainer Skill](../../../skills/knowledge-maintainer/SKILL.md) 规定生命周期对账、索引与入链修复，以及 `draft`、`stable`、`deprecated` 三个 OKF 状态。其 [本地检索合同](../../../skills/knowledge-maintainer/references/local-retrieval.md) 和 [QMD 决策](/technical/adr/local-fulltext-retrieval.md) 已覆盖无模型全文召回、变更 hash 对账、默认过滤 `deprecated`、显式 `--history` 和原文 hash 核验。已通过 CodeGraph 定位并核对 [QMD `_eligible`](../../../skills/knowledge-maintainer/scripts/context_kg_qmd.py) 第 356–376 行和 [无状态搜索](../../../skills/knowledge-maintainer/scripts/context_kg_search.py) 第 242–256 行：当时两者只按 `deprecated` 状态过滤，`archive/old.md` 若仍标 `stable`，普通搜索仍可能命中。**后续订正（2026-10-21）**：archive 路径与 Session Summary 隔离已由共享规则 [context_kg_history.py](../../../skills/knowledge-maintainer/scripts/context_kg_history.py) 实现，两条检索路径均调用同一判定并有回归用例；本页保留当时的观察作为实现前基线。**当时的新缺口**是 ADR 专属的分类建议、决策批准和实现证据判读、跨页替代关系校验、可回滚的批量移动/归档计划，以及活动导航与历史导航的双重隔离；现有检索能力不能自行宣布 ADR 失效。
 
 ## Fusion 当前目录盘点
 
@@ -76,7 +76,7 @@ sources:
 2. **语义提案**：当前宿主模型每批最多处理 10 篇候选 ADR，先读元数据和决策段，仅在不足以判断时展开直接关系和原始批准/实施证据，输出“主域、决策对象、范围、生效时期、是否批准、实现证据、是否存在替代决策、剩余历史价值、未决点”。每个判断附文件与片段位置、证据类型、相反证据。缺证据时输出 `review`，不输出猜测性删改。可选便宜子模型仅在宿主已有能力时做初筛，由当前 Agent 复核；脚本不持有新推理凭据。
 3. **确定性计划**：每项动作写明 `move | archive | merge | delete | keep | review`、旧/新路径、预期 hash、主域、适用范围、替代目标、理由、证据链接、需更新的入链/索引/来源及预期影响。检查器拒绝同范围同期间两个无说明的当前结论、替代环、无终点替代链、路径冲突、未修复的内部断链、指向删除页的来源、无证据的删除和跨任务文件。替代链终点可以是当前决策，也可以是有依据的撤回/终止；取消方案没有后继 ADR 时不伪造替代链接。合并须证明有效独有内容已迁移；移动应保留可追溯的旧路径映射。
 4. **隔离应用**：在专用 worktree 或临时复制中基于预期 hash 生成完整 diff，完成格式 lint、链接检查、索引检查和新旧查询；只有全部通过才将本任务文件的精确补丁应用到目标工作树。若目标变动则停止并重新提案；任一步失败，回滚本轮应用的文件，保留用户原有 dirty/untracked。阶段性预览可供人审阅；此合同不授权自动提交、推送或改 Fusion 规范。
-5. **发布检索视图**：权威仍是原文与分层 `index.md`；QMD/无状态搜索只是可重建候选索引。拟新增的普通领域查询同时排除 `archive/` 路径和 `deprecated`，防止一处标记遗漏；**现有脚本仅有状态过滤，路径隔离尚待实现**。`--history` 显式纳入归档并展示替代链、理由及原始证据，不能把历史命中直接当当前答案。QMD 同步失败时使用无状态搜索；两种路径均以实时文件及来源校验为准。
+5. **发布检索视图**：权威仍是原文与分层 `index.md`；QMD/无状态搜索只是可重建候选索引。拟新增的普通领域查询同时排除 `archive/` 路径和 `deprecated`，防止一处标记遗漏；当时脚本仅有状态过滤，路径隔离尚待实现。**后续订正（2026-10-21）**：该隔离已由 [context_kg_history.py](../../../skills/knowledge-maintainer/scripts/context_kg_history.py) 统一实现，两条检索路径共用同一判定，语义表见[本地全文检索](../../../skills/knowledge-maintainer/references/local-retrieval.md)。`--history` 显式纳入归档并展示替代链、理由及原始证据，不能把历史命中直接当当前答案。QMD 同步失败时使用无状态搜索；两种路径均以实时文件及来源校验为准。
 
 增量触发应接在“需求或决策确认、更新知识、实现影响既有决策”这些宿主工作流上：先沿来源与替代关系找直接影响项，再做有限复核。文件 watcher 只能发现文件改变，不会自行理解未写入文件的新需求，也不会证明某个旧决定已经失效。全库盘点用于首次接入或显式治理；普通会话只维护影响范围。
 

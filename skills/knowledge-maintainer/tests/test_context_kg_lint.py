@@ -6,6 +6,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).parents[1] / "scripts" / "context_kg_lint.py"
@@ -127,6 +128,38 @@ class ContextKgLintTest(unittest.TestCase):
         })
         self.assertEqual(0, result, output)
         self.assertIn("未列出直属项 technical", output)
+
+    def test_missing_pyyaml_exits_with_dependency_code_without_type_noise(self) -> None:
+        """缺 PyYAML 时必须短路，而不是对每个 concept 误报缺少 type。"""
+        with patch.object(MODULE, "yaml", None):
+            result, output = self.lint({
+                "index.md": "# Knowledge\n\n- [Cache](cache.md) - 缓存\n",
+                "cache.md": "---\ntype: Architecture Decision\n---\n# Cache\n",
+            })
+        self.assertEqual(3, result, output)
+        self.assertNotIn("缺少非空 type", output)
+        self.assertNotIn("断开的 Markdown 链接", output)
+        self.assertIn("PyYAML", output)
+
+    def test_load_frontmatter_distinguishes_empty_mapping_from_failure(self) -> None:
+        errors: list[str] = []
+        path = Path("cache.md")
+        self.assertEqual({}, MODULE.load_frontmatter("", path, errors))
+        self.assertEqual([], errors)
+        self.assertIsNone(MODULE.load_frontmatter("status: [unclosed", path, errors))
+        self.assertIn("不是可解析的 YAML", errors[0])
+        errors.clear()
+        self.assertIsNone(MODULE.load_frontmatter("- 1\n- 2", path, errors))
+        self.assertIn("必须是 YAML mapping", errors[0])
+
+    def test_unparseable_frontmatter_reports_only_yaml_error(self) -> None:
+        result, output = self.lint({
+            "index.md": "# Knowledge\n\n- [Bad](bad.md) - 坏页\n",
+            "bad.md": "---\ntype: [unclosed\n---\n\n# Bad\n",
+        })
+        self.assertEqual(1, result, output)
+        self.assertIn("不是可解析的 YAML", output)
+        self.assertNotIn("缺少非空 type", output)
 
 
 if __name__ == "__main__":

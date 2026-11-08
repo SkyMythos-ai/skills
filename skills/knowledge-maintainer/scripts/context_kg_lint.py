@@ -17,6 +17,12 @@ except ImportError:  # pragma: no cover - depends on the host environment
     yaml = None
 
 
+# 退出码与 context_kg_search.py 保持同一语义，并新增依赖缺失专用码。
+EXIT_OK = 0
+EXIT_INVALID = 1  # bundle 存在但内容不合规
+EXIT_UNUSABLE = 2  # 无法执行：bundle 不存在等
+EXIT_MISSING_DEPENDENCY = 3  # 缺少 PyYAML，未做任何格式判定
+
 VALID_STATUS = {"draft", "stable", "deprecated"}
 DATE_HEADING = re.compile(r"^##\s+(\d{4}-\d{2}-\d{2})\s*$", re.MULTILINE)
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
@@ -32,18 +38,25 @@ def split_frontmatter(text: str) -> tuple[str | None, str]:
     return text[4:end], text[end + 5 :]
 
 
-def load_frontmatter(raw: str, path: Path, errors: list[str]) -> dict[str, Any]:
+def load_frontmatter(raw: str, path: Path, errors: list[str]) -> dict[str, Any] | None:
+    """返回 None 表示无法解析，调用方必须短路；空 mapping 返回 {}。
+
+    区分这两种结果很重要：把“解析不了”当成“空 mapping”会让后续字段检查
+    对每个 concept 逐条误报，并掩盖真正的依赖缺失。
+    """
     if yaml is None:
         errors.append(f"{path}: PyYAML 未安装，无法验证 YAML 可解析性")
-        return {}
+        return None
     try:
         data = yaml.safe_load(raw)
     except yaml.YAMLError as exc:
         errors.append(f"{path}: frontmatter 不是可解析的 YAML：{exc}")
+        return None
+    if data is None:
         return {}
     if not isinstance(data, dict):
         errors.append(f"{path}: frontmatter 必须是 YAML mapping")
-        return {}
+        return None
     return data
 
 
@@ -95,6 +108,8 @@ def validate_concept(path: Path, text: str, errors: list[str]) -> None:
         return
 
     fields = load_frontmatter(raw, path, errors)
+    if fields is None:
+        return
     if not nonempty_string(fields.get("type")):
         errors.append(f"{path}: 缺少非空 type")
 
@@ -133,6 +148,8 @@ def validate_index(path: Path, root: Path, text: str, errors: list[str]) -> str:
         errors.append(f"{path}: 只有 bundle 根 index.md 可以包含 frontmatter")
     else:
         fields = load_frontmatter(raw, path, errors)
+        if fields is None:
+            return body
         if set(fields) - {"okf_version"}:
             errors.append(f"{path}: 根 index.md frontmatter 仅允许 okf_version")
         if "okf_version" in fields and str(fields["okf_version"]) != "0.2":
@@ -209,9 +226,15 @@ def validate_index_profile(
 def lint(context_kg: Path) -> int:
     errors: list[str] = []
     warnings: list[str] = []
+    if yaml is None:
+        # 没有 YAML 解析器时任何 frontmatter 判定都不可信，直接短路。
+        print("lint 结果：")
+        print(f"✗ 缺少依赖 PyYAML，未校验任何 concept（退出码 {EXIT_MISSING_DEPENDENCY}）")
+        print("  安装：python3 -m pip install pyyaml")
+        return EXIT_MISSING_DEPENDENCY
     if not context_kg.is_dir():
         print(f"lint 结果：\n✗ context-kg 不存在：{context_kg}")
-        return 2
+        return EXIT_UNUSABLE
 
     md_files = sorted(context_kg.rglob("*.md"))
     concept_count = 0
@@ -260,9 +283,9 @@ def lint(context_kg: Path) -> int:
     for error in errors:
         print(f"✗ {error}")
     if errors:
-        return 1
+        return EXIT_INVALID
     print("✓ OKF v0.2 基础结构检查通过")
-    return 0
+    return EXIT_OK
 
 
 def main() -> int:

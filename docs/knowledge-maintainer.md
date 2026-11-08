@@ -311,6 +311,8 @@ npx skills add https://github.com/SkyMythos-ai/skills --list
 python3 -m pip install pyyaml
 ```
 
+缺依赖时脚本不在无解析器的情况下猜结果，而是直接以退出码 `3` 结束，因此不会再出现逐页「缺少非空 type」的假报。退出码含义：`0` 通过；`1` 内容不合规；`2` 无法执行（例如 bundle 路径不存在）；`3` 缺少 PyYAML——先装依赖再重跑，不要把它当作格式错误。
+
 ### 断链为什么只是警告
 
 OKF 消费者需要容忍尚未补齐的链接，因此断链不会使 bundle 本身不合规。维护时仍应修复可确认的断链，避免渐进式导航失效。
