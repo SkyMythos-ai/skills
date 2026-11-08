@@ -3,7 +3,8 @@
 
 只用 Python 3 标准库，不依赖 PyYAML，不执行仓库中的示例代码。当前检查项：
 
-1. `skills/<name>/SKILL.md` 的 frontmatter 可解析，`name` 与目录名一致，并含 `description`。
+1. `skills/<name>/SKILL.md` 的 frontmatter 可解析，`name` 与目录名一致，并声明
+   `description` 与 `version`（后者与 `CHANGELOG.md` 对应）。
 2. 全仓库 Markdown 相对链接可解析；bundle 根链接（`/xxx`）按 `context-kg/` 解析。
 3. `example:` 标记必须成对（`<id>-bad` / `<id>-good`）且 ID 全仓库唯一。
 4. `gate-example:` 只能是可执行断言（`shell-bad` / `shell-good`）并按文件成对；
@@ -151,6 +152,8 @@ def check_skills(root: Path, errors: list[str]) -> None:
             errors.append(f"{document}: frontmatter name 必须是目录名 {name!r}")
         if not fields.get("description"):
             errors.append(f"{document}: frontmatter 必须声明 description")
+        if not fields.get("version"):
+            errors.append(f"{document}: frontmatter 必须声明 version（与 CHANGELOG 对应）")
 
 
 def check_links(root: Path, files: list[Path], errors: list[str]) -> int:

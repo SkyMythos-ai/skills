@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""以隔离的 QMD 2.8.3 全文索引检索 OKF context-kg，不调用模型。"""
+"""以隔离的 QMD 全文索引检索 OKF context-kg，不调用模型。
+
+固定 QMD 版本只在本文件的 QMD_VERSION 定义；文档与提示词引用它，不再各自写死。
+"""
 
 from __future__ import annotations
 
@@ -36,6 +39,7 @@ except ImportError:  # importlib 加载本脚本时也须可用
     from context_kg_search import _freshness
 
 SCHEMA_VERSION = 1
+QMD_VERSION = "2.8.3"
 MAX_DOCUMENTS = 10000
 ALLOWED_QMD_COMMANDS = {"--version", "update", "search", "cleanup", "status"}
 RESERVED = {"index.md", "log.md"}
@@ -174,7 +178,9 @@ class LocalIndex:
                 capture_output=True, text=True, timeout=self.timeout, check=False,
             )
         except FileNotFoundError as exc:
-            raise RetrievalError("未找到 QMD；请安装固定版本 2.8.3，或使用 context_kg_search.py 回退") from exc
+            raise RetrievalError(
+                f"未找到 QMD；请安装固定版本 {QMD_VERSION}，或使用 context_kg_search.py 回退"
+            ) from exc
         except subprocess.TimeoutExpired as exc:
             raise RetrievalError(f"QMD {args[0]} 超时（{self.timeout:g}s）") from exc
         if result.returncode:
@@ -185,7 +191,7 @@ class LocalIndex:
     def check_version(self) -> None:
         output = self.run_qmd("--version").strip()
         if not re.match(r"^qmd 2\.8\.3(?:\s|$)", output):
-            raise RetrievalError(f"仅支持 QMD 2.8.3，当前：{output[:100]}")
+            raise RetrievalError(f"仅支持 QMD {QMD_VERSION}，当前：{output[:100]}")
 
     def load_manifest(self) -> dict[str, Any] | None:
         if not self.manifest_path.is_file():
@@ -343,7 +349,7 @@ class LocalIndex:
         except ValueError as exc:
             raise RetrievalError("QMD search 返回无效 JSON") from exc
         if not isinstance(parsed, list):
-            raise RetrievalError("QMD search 返回格式不符合 2.8.3 契约")
+            raise RetrievalError(f"QMD search 返回格式不符合 {QMD_VERSION} 契约")
         return [row for row in parsed if isinstance(row, dict)]
 
     @staticmethod
@@ -599,8 +605,10 @@ def watch(index: LocalIndex, *, interval: float = 1.0, debounce: float = 0.4,
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="隔离的 QMD 2.8.3 本地全文概念检索")
-    parser.add_argument("--qmd", default="qmd", help="QMD 2.8.3 可执行文件")
+    parser = argparse.ArgumentParser(
+        description=f"隔离的 QMD {QMD_VERSION} 本地全文概念检索"
+    )
+    parser.add_argument("--qmd", default="qmd", help=f"QMD {QMD_VERSION} 可执行文件")
     parser.add_argument("--cache-dir", type=Path, help="bundle 和 Git checkout 外的私有缓存目录")
     parser.add_argument("--timeout", type=float, default=60.0, help="每个 QMD 子进程的秒数上限")
     parser.add_argument("root", type=Path, help="context-kg 根目录")

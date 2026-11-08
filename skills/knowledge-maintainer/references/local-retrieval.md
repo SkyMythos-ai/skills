@@ -4,7 +4,7 @@
 
 ## 准备与边界
 
-需要 Python 3.9+、PyYAML、macOS/Linux，以及固定 `@tobilu/qmd@2.8.3` 的可执行文件。首次使用先检查依赖；缺失时明确说明并使用原有 `context_kg_search.py` 完成候选定位，不能把 QMD 故障解释成无答案。安装依赖属于显式准备操作，不在查询中自动下载：
+需要 Python 3.9+、PyYAML、macOS/Linux，以及固定版本的 QMD 可执行文件。版本只在 `scripts/context_kg_qmd.py` 的 `QMD_VERSION` 定义（当前 `2.8.3`），安装与提示词以它为准。首次使用先检查依赖；缺失时明确说明并使用原有 `context_kg_search.py` 完成候选定位，不能把 QMD 故障解释成无答案。安装依赖属于显式准备操作，不在查询中自动下载：
 
 ```bash
 python3 -m pip install pyyaml

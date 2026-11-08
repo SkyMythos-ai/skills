@@ -142,7 +142,9 @@ class LocalContractTest(unittest.TestCase):
                 index.run_qmd(command)
 
 
-@unittest.skipUnless(QMD, "设置 CONTEXT_KG_QMD_EXECUTABLE 以运行真实 QMD 2.8.3 集成检查")
+@unittest.skipUnless(
+    QMD, f"设置 CONTEXT_KG_QMD_EXECUTABLE 以运行真实 QMD {MODULE.QMD_VERSION} 集成检查")
+
 class QmdIntegrationTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="knowledge-qmd-test-")
@@ -345,7 +347,7 @@ class QmdIntegrationTest(unittest.TestCase):
         failing = self.directory / "qmd-fail"
         failing.write_text(
             f"#!{sys.executable}\nimport sys\n"
-            "if '--version' in sys.argv:\n print('qmd 2.8.3 (test)')\n"
+            f"if '--version' in sys.argv:\n print('qmd {MODULE.QMD_VERSION} (test)')\n"
             "else:\n print('injected update failure', file=sys.stderr)\n sys.exit(73)\n",
             encoding="utf-8",
         )
@@ -363,7 +365,7 @@ class QmdIntegrationTest(unittest.TestCase):
         target.write_bytes(original.replace(b"APPLE", b"BANANA"))
         failing = self.directory / "qmd-fail"
         failing.write_text(f"#!{sys.executable}\nimport sys\n"
-                           "if '--version' in sys.argv: print('qmd 2.8.3 (test)')\n"
+                           f"if '--version' in sys.argv: print('qmd {MODULE.QMD_VERSION} (test)')\n"
                            "else: sys.exit(73)\n", encoding="utf-8")
         failing.chmod(0o700)
         self.invoke("sync", executable=str(failing), success=False)

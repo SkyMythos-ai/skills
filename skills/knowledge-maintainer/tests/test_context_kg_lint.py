@@ -129,6 +129,27 @@ class ContextKgLintTest(unittest.TestCase):
         self.assertEqual(0, result, output)
         self.assertIn("未列出直属项 technical", output)
 
+    def test_docs_design_hint_requires_explicit_flag(self) -> None:
+        """docs/design 启发式是单项目坐标，必须显式开启才输出。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            base = Path(temp_dir)
+            root = base / "context-kg"
+            (root / "technical").mkdir(parents=True)
+            (root / "index.md").write_text(
+                "# Knowledge\n\n- [Cache](technical/cache.md) - 缓存\n", encoding="utf-8")
+            (root / "technical" / "cache.md").write_text(
+                "---\ntype: Reference\n---\n# Cache\n", encoding="utf-8")
+            (base / "docs" / "design").mkdir(parents=True)
+            (base / "docs" / "design" / "note.md").write_text("# Note\n", encoding="utf-8")
+            output = StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(0, MODULE.lint(root))
+            self.assertNotIn("docs/design", output.getvalue())
+            output = StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(0, MODULE.lint(root, docs_design=True))
+            self.assertIn("docs/design", output.getvalue())
+
     def test_missing_pyyaml_exits_with_dependency_code_without_type_noise(self) -> None:
         """缺 PyYAML 时必须短路，而不是对每个 concept 误报缺少 type。"""
         with patch.object(MODULE, "yaml", None):

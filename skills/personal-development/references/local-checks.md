@@ -30,10 +30,10 @@ Skill 提供 [probe_tools.py](../scripts/probe_tools.py)，仅使用 Python 3 �
 
 ```bash
 python3 scripts/probe_tools.py \
-  --project /path/to/project --language rust --expect rustc=1.94.0 --expect cargo=1.94.0
+  --project /path/to/project --language rust --expect "rustc=<version>" --expect "cargo=<version>"
 ```
 
-这里的 1.94.0 是当前 ai-gateway 的实测示例；其它项目必须从自己的版本声明填写。可重复 `--language go` / `--language java`，也可额外传入 `--require cargo-audit` 或 `--require sonar-scanner`。Java 按显式 `JAVA_HOME/bin` 优先探测。
+把 `<version>` 换成项目自己声明的版本（例如 `rust-toolchain.toml`、lockfile 或 CI 配置里的固定值）；不要照抄其他项目的实测版本号。可重复 `--language go` / `--language java`，也可额外传入 `--require cargo-audit` 或 `--require sonar-scanner`。Java 按显式 `JAVA_HOME/bin` 优先探测。
 
 输出包含命令路径、真实版本、退出码和缺失提示。`exit 0` 仅说明选定工具能启动且显式 `--expect` 匹配；缺失、失败、超时或版本不符为 `exit 2`。未提供 `--expect` 的工具不声称已核对版本策略。脚本不安装工具、不自动运行仓库 wrapper、不执行扫描或上传；被调用的工具代理可能按自身机制下载工具链，严格离线预检应先检查项目管理器配置。
 

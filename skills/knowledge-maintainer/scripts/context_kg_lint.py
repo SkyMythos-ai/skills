@@ -223,7 +223,7 @@ def validate_index_profile(
             )
 
 
-def lint(context_kg: Path) -> int:
+def lint(context_kg: Path, *, docs_design: bool = False) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     if yaml is None:
@@ -271,9 +271,11 @@ def lint(context_kg: Path) -> int:
         elif directory in index_bodies:
             validate_index_profile(directory, context_kg, index_bodies[directory], warnings)
 
-    docs_design = context_kg.parent / "docs" / "design"
-    if docs_design.is_dir() and any(docs_design.rglob("*.md")):
-        warnings.append("docs/design 中存在 Markdown；长期设计知识应评估迁入 context-kg")
+    if docs_design:
+        # 单项目坐标：是否把 docs/design 视为待迁移知识由仓库自己决定，默认不输出。
+        docs_design_dir = context_kg.parent / "docs" / "design"
+        if docs_design_dir.is_dir() and any(docs_design_dir.rglob("*.md")):
+            warnings.append("docs/design 中存在 Markdown；长期设计知识应评估迁入 context-kg")
 
     print("lint 结果：")
     print(f"✓ concept：{concept_count}")
@@ -291,8 +293,13 @@ def lint(context_kg: Path) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Lint an OKF v0.2 context-kg bundle.")
     parser.add_argument("context_kg", nargs="?", default="context-kg", help="context-kg 路径")
+    parser.add_argument(
+        "--docs-design",
+        action="store_true",
+        help="额外提示 docs/design 下的 Markdown 是否应迁入 context-kg（默认关闭）",
+    )
     args = parser.parse_args()
-    return lint(Path(args.context_kg).resolve())
+    return lint(Path(args.context_kg).resolve(), docs_design=args.docs_design)
 
 
 if __name__ == "__main__":
